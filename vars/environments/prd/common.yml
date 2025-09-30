@@ -1,0 +1,4 @@
+variables:
+  environment: prd
+  sku: prd-sku
+

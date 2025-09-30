@@ -1,0 +1,5 @@
+variables:
+  regionCode: neu
+  region: northeurope
+  regionDisplay: North Europe
+

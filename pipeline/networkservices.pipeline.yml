@@ -1,0 +1,131 @@
+# Example Bicep deploy plus post-deploy Pester tests
+
+parameters:
+  # Global flags
+  - name: enableProduction
+    displayName: "Enable Production"
+    type: boolean
+    default: false
+  - name: drInvocation
+    displayName: "Invoke Pipeline DR Operation"
+    type: boolean
+    default: false
+
+  # Pipeline-level controls
+  - name: doNotRunReviewStage
+    displayName: "Temporarily Skip Review Stage"
+    type: boolean
+    default: false
+
+  # Bicep action group toggles
+  - name: doNotRunBicepActions
+    displayName: "Bicep Actions: Skip All"
+    type: boolean
+    default: false
+  - name: doNotRunResourceGroup
+    displayName: "Bicep Actions: Skip Resource Group"
+    type: boolean
+    default: false
+  - name: doNotRunNetworkServices
+    displayName: "Bicep Actions: Skip Network Services"
+    type: boolean
+    default: false
+
+  # Bicep test toggles & settings
+  - name: doNotRunBicepTests
+    displayName: "Bicep Tests: Skip All"
+    type: boolean
+    default: false
+  - name: doNotRunRegression
+    displayName: "Bicep Tests: Skip Regression"
+    type: boolean
+    default: false
+  - name: doNotRunSmoke
+    displayName: "Bicep Tests: Skip Smoke"
+    type: boolean
+    default: false
+  - name: bicepTestsDelayMinutes
+    displayName: "Bicep Tests: Delay start (minutes)"
+    type: number
+    default: 0
+    values:
+      - 0
+      - 5
+      - 15
+      - 30
+      - 45
+      - 60
+
+  # Operational flags
+  - name: allowDeleteOnUnmanage
+    displayName: "Temporarily Allow Delete on Unmanage"
+    type: boolean
+    default: false
+  - name: cleanupResourceGroupStack
+    displayName: "Cleanup Resource Group Stack"
+    type: boolean
+    default: false
+
+  # Environment skips
+  - name: skip_dev
+    displayName: "Skip Environment: Development"
+    type: boolean
+    default: false
+  - name: skip_qa
+    displayName: "Skip Environment: QA"
+    type: boolean
+    default: true
+  - name: skip_preprod
+    displayName: "Skip Environment: Pre-Production"
+    type: boolean
+    default: true
+
+extends:
+  template: containerservices.settings.yml
+  parameters:
+    enableProduction: ${{ parameters.enableProduction }}
+    runReviewStage: ${{ not(parameters.doNotRunReviewStage) }}
+    drInvocation: ${{ parameters.drInvocation }}
+    skip_dev: ${{ parameters.skip_dev }}
+    skip_qa: ${{ parameters.skip_qa }}
+    skip_preprod: ${{ parameters.skip_preprod }}
+    actionGroups:
+      - name: bicep_actions
+        enabled: ${{ not(parameters.doNotRunBicepActions) }}
+        type: bicep
+        tokenReplaceEnabled: true
+        actions:
+          - name: resource_group
+            enabled: ${{ not(parameters.doNotRunResourceGroup) }}
+            scope: subscription
+            resourceGroupName: $(resourceGroup)
+            location: $(region)
+            allowDeleteOnUnmanage: ${{ parameters.allowDeleteOnUnmanage}}
+            cleanupStack: ${{ parameters.cleanupResourceGroupStack }}
+            templatePath: platform/resourcegroup.bicep
+            parametersPath: platform/resourcegroup.bicepparam
+          - name: network_services
+            enabled: ${{ not(parameters.doNotRunNetworkServices) }}
+            scope: resourceGroup
+            resourceGroupName: $(resourceGroup)
+            location: $(region)
+            allowDeleteOnUnmanage: ${{ parameters.allowDeleteOnUnmanage }}
+            templatePath: platform/networkservices.bicep
+            parametersPath: platform/networkservices.bicepparam
+      - name: bicep_tests
+        enabled: ${{ not(parameters.doNotRunBicepTests) }}
+        type: powershell
+        scriptTask: azureCli
+        delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
+        ${{ if not(parameters.doNotRunBicepActions) }}:
+          dependsOn:
+            - bicep_actions
+        actions:
+          - name: regression
+            enabled: ${{ not(parameters.doNotRunRegression) }}
+            scriptPath: scripts/pester_run.ps1
+            arguments: "-TestsPath tests/regression -ResultsFile TestResults/pester.regression.xml"
+          - name: smoke
+            enabled: ${{ not(parameters.doNotRunSmoke) }}
+            scriptPath: scripts/pester_run.ps1
+            arguments: "-TestsPath tests/smoke -ResultsFile TestResults/pester.smoke.xml"

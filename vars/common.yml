@@ -1,0 +1,8 @@
+# Common/shared variables
+variables:
+  service: app
+  deploymentVersion: 001
+  idInstanceVersion: 001
+  owner: platform-team
+  resourceGroup: rg-$(service)-$(environment)-$(regionCode)-$(deploymentVersion)
+  serviceConnection: sc-azure-vse-shared-sub-wif-001

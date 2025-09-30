@@ -1,0 +1,4 @@
+variables:
+  environment: dev
+  sku: dev-sku
+

@@ -1,0 +1,4 @@
+variables:
+  environment: qa
+  sku: qa-sku
+
