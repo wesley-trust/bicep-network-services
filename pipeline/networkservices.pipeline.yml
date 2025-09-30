@@ -81,7 +81,7 @@ parameters:
     default: true
 
 extends:
-  template: containerservices.settings.yml
+  template: networkservices.settings.yml
   parameters:
     enableProduction: ${{ parameters.enableProduction }}
     runReviewStage: ${{ not(parameters.doNotRunReviewStage) }}
