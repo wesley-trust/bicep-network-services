@@ -1,17 +1,38 @@
-param name string
+targetScope = 'resourceGroup'
+
+@description('Flag to determine whether to deploy the virtual network spoke. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
+param deployVirtualNetworkString string
+
+@description('Convert the deployVirtualNetworkString parameter to a boolean value.')
+var deployVirtualNetwork = bool(deployVirtualNetworkString)
+
+@description('Name of the virtual network spoke to create.')
+param virtualNetworkName string
+
+@description('Azure region for the virtual network. Defaults to the current resource group location.')
 param location string = resourceGroup().location
 
-module identity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
-  params: {
-    name: name
-    location: location
-  }
-}
+@description('Array representing the address prefixes assigned to the virtual network, e.g. ["10.10.0.0/16"].')
+param addressPrefixes array = []
 
-// Test second
-module identity_second 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
+@description('Array describing the subnets, in subnetType (object) to create within the virtual network.')
+param subnets array = []
+
+@description('Optional tags applied to the virtual network.')
+param tags object = {}
+
+@description('Optional flag to enable VM protection on all subnets within the virtual network.')
+param enableVmProtection bool?
+
+var normalizedTags = empty(tags) ? null : tags
+
+module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (deployVirtualNetwork == true) {
   params: {
-    name: '${name}_second'
+    name: virtualNetworkName
     location: location
+    addressPrefixes: addressPrefixes
+    subnets: subnets
+    tags: normalizedTags
+    enableVmProtection: enableVmProtection
   }
 }

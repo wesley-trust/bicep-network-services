@@ -41,7 +41,6 @@ extends:
       environments:
         - name: dev
           class: development
-          #dependsOn: validation
           dependsOnSecondaryRegions: false
           primaryRegion: weu
           secondaryRegions:
@@ -55,11 +54,10 @@ extends:
           poolRegionDemand: false
         - name: qa
           class: test
-          #dependsOn: validation
           dependsOnSecondaryRegions: false
           primaryRegion: weu
           allowedBranches:
-            - "main"
+            - "feature/*"
             - "release/*"
           pool:
             vmImage: "ubuntu-latest"
@@ -67,7 +65,6 @@ extends:
           poolRegionDemand: false
         - name: ppr
           class: acceptance
-          #dependsOn: validation
           dependsOnSecondaryRegions: false
           primaryRegion: weu
           secondaryRegions:
@@ -81,8 +78,6 @@ extends:
           poolRegionDemand: false
         - name: prd
           class: production
-          #dependsOn: validation
-          #dependsOnSecondaryRegions: false
           primaryRegion: weu
           secondaryRegions:
             - neu
