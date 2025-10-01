@@ -32,7 +32,21 @@ param deployNetworkSecurityGroupString = '#{{ deployNetworkSecurityGroup }}'
 param networkSecurityGroups = [
   {
     name: 'nsg-#{{ snet-001-name }}'
-    securityRules: []
+    securityRules: [
+      {
+        name: 'allow-SharedServices-PROD-vnet-inbound'
+        properties: {
+          access: 'Allow'
+          destinationAddressPrefix: '*'
+          destinationPortRanges: '*'
+          direction: 'inbound'
+          priority: 100
+          protocol: '*'
+          sourceAddressPrefix: '10.0.2.0/24'
+          sourcePortRange: '*'
+        }
+      }
+    ]
   }
 ]
 
