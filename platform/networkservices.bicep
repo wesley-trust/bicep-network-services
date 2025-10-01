@@ -15,8 +15,14 @@ param location string = resourceGroup().location
 @description('Array representing the address prefixes assigned to the virtual network, e.g. ["10.10.0.0/16"].')
 param addressPrefixes array = []
 
+@description('Array of DNS servers to assign to the virtual network. If empty, Azure default DNS servers will be used.')
+param dnsServers array = []
+
 @description('Array describing the subnets, in subnetType (object) to create within the virtual network.')
 param subnets array = []
+
+@description('Array of virtual network peerings to create. Each peering should be in peeringType (object) format.')
+param peerings array = []
 
 @description('Optional tags applied to the virtual network.')
 param tags object = {}
@@ -31,7 +37,9 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (de
     name: virtualNetworkName
     location: location
     addressPrefixes: addressPrefixes
+    dnsServers: dnsServers
     subnets: subnets
+    peerings: peerings
     tags: normalizedTags
     enableVmProtection: enableVmProtection
   }
