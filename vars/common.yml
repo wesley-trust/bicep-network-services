@@ -29,3 +29,6 @@ variables:
 
   # Route Table configuration
   deployRouteTable: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
+
+  # Network Security Group configuration
+  deployNetworkSecurityGroup: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
