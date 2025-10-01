@@ -22,6 +22,14 @@ param routeTables = [
           nextHopType: 'VirtualAppliance'
         }
       }
+      {
+        name: 'home'
+        properties: {
+          addressPrefix: '192.168.1.0/24'
+          nextHopIpAddress: '10.4.0.4'
+          nextHopType: 'VirtualAppliance'
+        }
+      }
     ]
   }
 ]
@@ -38,11 +46,24 @@ param networkSecurityGroups = [
         properties: {
           access: 'Allow'
           destinationAddressPrefix: '*'
-          destinationPortRanges: '*'
+          destinationPortRanges: ['*']
           direction: 'inbound'
           priority: 100
           protocol: '*'
           sourceAddressPrefix: '10.0.2.0/24'
+          sourcePortRange: '*'
+        }
+      }
+      {
+        name: 'allow-home-inbound'
+        properties: {
+          access: 'Allow'
+          destinationAddressPrefix: '*'
+          destinationPortRanges: ['*']
+          direction: 'inbound'
+          priority: 100
+          protocol: '*'
+          sourceAddressPrefix: '192.168.1.0/24'
           sourcePortRange: '*'
         }
       }
