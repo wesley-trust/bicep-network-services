@@ -46,7 +46,7 @@ param networkSecurityGroups = [
         properties: {
           access: 'Allow'
           destinationAddressPrefix: '*'
-          destinationPortRanges: ['*']
+          destinationPortRange: '*'
           direction: 'Inbound'
           priority: 100
           protocol: '*'
@@ -59,7 +59,7 @@ param networkSecurityGroups = [
         properties: {
           access: 'Allow'
           destinationAddressPrefix: '*'
-          destinationPortRanges: ['*']
+          destinationPortRange: '*'
           direction: 'Inbound'
           priority: 100
           protocol: '*'
