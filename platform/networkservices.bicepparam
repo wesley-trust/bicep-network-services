@@ -13,14 +13,16 @@ param deployRouteTableString = '#{{ deployRouteTable }}'
 param routeTables = [
   {
     name: 'rt-#{{ snet-001-name }}'
-    routes: {
-      name: 'SharedServices-PROD-vnet'
-      properties: {
-        addressPrefix: '10.0.2.0/24'
-        nextHopIpAddress: '10.4.0.4'
-        nextHopType: 'VirtualAppliance'
+    routes: [
+      {
+        name: 'SharedServices-PROD-vnet'
+        properties: {
+          addressPrefix: '10.0.2.0/24'
+          nextHopIpAddress: '10.4.0.4'
+          nextHopType: 'VirtualAppliance'
+        }
       }
-    }
+    ]
   }
 ]
 
@@ -30,7 +32,7 @@ param deployNetworkSecurityGroupString = '#{{ deployNetworkSecurityGroup }}'
 param networkSecurityGroups = [
   {
     name: 'nsg-#{{ snet-001-name }}'
-    securityRules: null
+    securityRules: []
   }
 ]
 
