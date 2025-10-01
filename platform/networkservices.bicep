@@ -69,10 +69,19 @@ param dnsServers array = []
 @description('Array describing the subnets, in subnetType (object) to create within the virtual network.')
 param subnets array = []
 var subnetsWithRtAndNsg = [
-  for subnet in subnets: union(subnet, {
-    routeTableResourceId: resourceId('Microsoft.Network/routeTables', 'rt-${subnet.name}')
-    networkSecurityGroupResourceId: resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-${subnet.name}')
-  })
+  for subnet in subnets: union(
+    subnet,
+    deployRouteTable
+      ? {
+          routeTableResourceId: resourceId('Microsoft.Network/routeTables', 'rt-${subnet.name}')
+        }
+      : {},
+    deployNetworkSecurityGroup
+      ? {
+          networkSecurityGroupResourceId: resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-${subnet.name}')
+        }
+      : {}
+  )
 ]
 
 @description('Array of virtual network peerings to create. Each peering should be in peeringType (object) format.')
@@ -81,7 +90,7 @@ param peerings array = []
 @description('Optional flag to enable VM protection on all subnets within the virtual network.')
 param enableVmProtection bool?
 
-module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (deployVirtualNetwork == true && deployRouteTable == true) {
+module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (deployVirtualNetwork == true) {
   params: {
     name: virtualNetworkName
     location: location
@@ -94,5 +103,6 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (de
   }
   dependsOn: [
     routeTable
+    networkSecurityGroup
   ]
 }

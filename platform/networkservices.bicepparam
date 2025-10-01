@@ -64,7 +64,7 @@ param networkSecurityGroups = [
           priority: 100
           protocol: '*'
           sourceAddressPrefix: '192.168.1.0/24'
-          sourcePortRange: ['*']
+          sourcePortRange: '*'
         }
       }
     ]
