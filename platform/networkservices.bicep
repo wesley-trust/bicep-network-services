@@ -68,9 +68,10 @@ param dnsServers array = []
 
 @description('Array describing the subnets, in subnetType (object) to create within the virtual network.')
 param subnets array = []
-var subnetsWithRt = [
+var subnetsWithRtAndNsg = [
   for subnet in subnets: union(subnet, {
     routeTableResourceId: resourceId('Microsoft.Network/routeTables', 'rt-${subnet.name}')
+    networkSecurityGroupResourceId: resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-${subnet.name}')
   })
 ]
 
@@ -86,7 +87,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (de
     location: location
     addressPrefixes: addressPrefixes
     dnsServers: dnsServers
-    subnets: subnetsWithRt
+    subnets: subnetsWithRtAndNsg
     peerings: peerings
     tags: normalizedTags
     enableVmProtection: enableVmProtection
