@@ -1,5 +1,14 @@
+# Common/shared variables
 variables:
-  regionCode: weu
-  region: westeurope
-  regionDisplay: West Europe
+  regionCode: neu
+  region: northeurope
+  regionDisplay: North Europe
 
+  ## Virtual Network: vnet-001
+  vnet-001-addressPrefix: "10.10.0.0/22"
+
+  # Subnet configuration
+  subnetInstanceVersion: 001
+
+  ## Subnet: snet-001
+  snet-001-addressPrefix: "10.10.0.0/24"

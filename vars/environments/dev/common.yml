@@ -1,4 +1,3 @@
+# Common/shared variables
 variables:
   environment: dev
-  sku: dev-sku
-

@@ -12,12 +12,11 @@ variables:
   resourceGroup: rg-$(service)-$(environment)-$(regionCode)-$(deploymentVersion)
 
   # Virtual Network configuration
-  deployVirtualNetwork: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
+  deployVirtualNetwork: false # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
   vNetInstanceVersion: 001
 
   ## Virtual Network: vnet-001
   vnet-001-name: vnet-$(service)-$(environment)-$(regionCode)-$(vNetInstanceVersion)
-  vnet-001-addressPrefix: "10.8.0.0/22"
   vnet-001-dnsPrimaryServer: "10.0.2.10"
   vnet-001-dnsSecondaryServer: "10.0.2.11"
 
@@ -27,4 +26,3 @@ variables:
   ## Subnet: snet-001
   snet-001-service: "ca"
   snet-001-name: snet-$(service)-$(environment)-$(regionCode)-vnet-$(vNetInstanceVersion)-$(snet-001-service)-$(subnetInstanceVersion)
-  snet-001-addressPrefix: "10.8.0.0/24"
