@@ -15,20 +15,40 @@ param deployRouteTableString string
 @description('Convert the deployRouteTableString parameter to a boolean value.')
 var deployRouteTable = bool(deployRouteTableString)
 
-@description('Name of the route table to create.')
-param routeTableName string
+@description('Array of route tables to create.')
+param routeTables array
 
-@description('Array of routes to create within the route table, in routeType (object) format.')
-param routes array
-
-module routeTable 'br/public:avm/res/network/route-table:0.5.0' = if (deployRouteTable == true) {
-  params: {
-    name: routeTableName
-    routes: routes
-    location: location
-    tags: normalizedTags
+module routeTable 'br/public:avm/res/network/route-table:0.5.0' = [
+  for (routeTable, index) in (routeTables ?? []): if (deployRouteTable == true) {
+    params: {
+      name: routeTable.name
+      location: location
+      routes: routeTable.routes
+      tags: normalizedTags
+    }
   }
-}
+]
+
+// Network Security Group
+@description('Flag to determine whether to deploy the network security group. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
+param deployNetworkSecurityGroupString string
+
+@description('Convert the deployNetworkSecurityGroupString parameter to a boolean value.')
+var deployNetworkSecurityGroup = bool(deployNetworkSecurityGroupString)
+
+@description('Array of network security groups to create.')
+param networkSecurityGroups array
+
+module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.5.1' = [
+  for (networkSecurityGroup, index) in (networkSecurityGroups ?? []): if (deployNetworkSecurityGroup == true) {
+    params: {
+      name: networkSecurityGroup.name
+      location: location
+      securityRules: networkSecurityGroup.securityRules
+      tags: normalizedTags
+    }
+  }
+]
 
 // Virtual Network
 @description('Flag to determine whether to deploy the virtual network spoke. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
