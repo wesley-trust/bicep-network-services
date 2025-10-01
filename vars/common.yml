@@ -26,3 +26,6 @@ variables:
   ## Subnet: snet-001
   snet-001-service: "ca"
   snet-001-name: snet-$(service)-$(environment)-$(regionCode)-vnet-$(vNetInstanceVersion)-$(snet-001-service)-$(subnetInstanceVersion)
+
+  # Route Table configuration
+  deployRouteTable: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
