@@ -95,8 +95,8 @@ extends:
       variables:
         includeCommon: true
         includeEnv: true
-        includeEnvRegion: false
-        includeRegionOnly: true
+        includeEnvRegion: true
+        includeRegion: true
       variableGroups:
         - "Common-Variables"
       validation:
