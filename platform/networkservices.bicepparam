@@ -47,11 +47,11 @@ param networkSecurityGroups = [
           access: 'Allow'
           destinationAddressPrefix: '*'
           destinationPortRanges: ['*']
-          direction: 'inbound'
+          direction: 'Inbound'
           priority: 100
           protocol: '*'
           sourceAddressPrefix: '10.0.2.0/24'
-          sourcePortRange: '*'
+          sourcePortRange: ['*']
         }
       }
       {
@@ -60,11 +60,11 @@ param networkSecurityGroups = [
           access: 'Allow'
           destinationAddressPrefix: '*'
           destinationPortRanges: ['*']
-          direction: 'inbound'
+          direction: 'Inbound'
           priority: 100
           protocol: '*'
           sourceAddressPrefix: '192.168.1.0/24'
-          sourcePortRange: '*'
+          sourcePortRange: ['*']
         }
       }
     ]
