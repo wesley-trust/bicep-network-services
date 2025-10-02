@@ -67,18 +67,18 @@ parameters:
     default: false
 
   # Environment skips
-  - name: skip_dev
-    displayName: "Skip Environment: Development"
-    type: boolean
-    default: false
-  - name: skip_qa
-    displayName: "Skip Environment: QA"
-    type: boolean
-    default: true
-  - name: skip_preprod
-    displayName: "Skip Environment: Pre-Production"
-    type: boolean
-    default: true
+  # - name: skip_dev
+  #   displayName: "Skip Environment: Development"
+  #   type: boolean
+  #   default: false
+  # - name: skip_qa
+  #   displayName: "Skip Environment: QA"
+  #   type: boolean
+  #   default: true
+  # - name: skip_preprod
+  #   displayName: "Skip Environment: Pre-Production"
+  #   type: boolean
+  #   default: true
 
 extends:
   template: networkservices.settings.yml
