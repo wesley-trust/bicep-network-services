@@ -1,5 +1,3 @@
-# Settings for Bicep + post-deploy Pester example
-
 parameters:
   - name: actionGroups
     type: object
@@ -13,15 +11,12 @@ parameters:
   - name: drInvocation
     type: boolean
     default: false
-  - name: skip_dev
-    type: boolean
-    default: false
-  - name: skip_qa
-    type: boolean
-    default: false
-  - name: skip_preprod
-    type: boolean
-    default: false
+  - name: skip_environments
+    type: object
+    default:
+      dev: false
+      qa: false
+      ppr: false
 
 resources:
   repositories:
@@ -29,80 +24,17 @@ resources:
       type: github
       endpoint: wesley-trust
       name: wesley-trust/pipeline-dispatcher
-      ref: "refs/heads/main"
+      ref: "refs/heads/feature/default-settings"
+      #ref: "refs/heads/main"
 
 extends:
-  template: /templates/pipeline-dispatcher.yml@PipelineDispatcher
+  template: /templates/pipeline-defaults.yml@PipelineDispatcher
   parameters:
-    configuration:
-      defaultPool:
-        vmImage: "ubuntu-latest"
-      serviceConnection: serviceConnection
-      environments:
-        - name: dev
-          class: development
-          dependsOnSecondaryRegions: false
-          primaryRegion: weu
-          secondaryRegions:
-            - neu
-          drRegion: neu
-          allowedBranches:
-            - "*"
-          pool:
-            vmImage: "ubuntu-latest"
-          skipEnvironment: ${{ parameters.skip_dev }}
-          poolRegionDemand: false
-        - name: qa
-          class: test
-          dependsOnSecondaryRegions: false
-          primaryRegion: weu
-          allowedBranches:
-            - "feature/*"
-            - "release/*"
-          pool:
-            vmImage: "ubuntu-latest"
-          skipEnvironment: ${{ parameters.skip_qa }}
-          poolRegionDemand: false
-        - name: ppr
-          class: acceptance
-          dependsOnSecondaryRegions: false
-          primaryRegion: weu
-          secondaryRegions:
-            - neu
-          allowedBranches:
-            - "main"
-            - "release/*"
-          pool:
-            vmImage: "ubuntu-latest"
-          skipEnvironment: ${{ parameters.skip_preprod }}
-          poolRegionDemand: false
-        - name: prd
-          class: production
-          primaryRegion: weu
-          secondaryRegions:
-            - neu
-          drRegion: neu
-          allowedBranches:
-            - "release/*"
-          pool:
-            vmImage: "ubuntu-latest"
-          poolRegionDemand: true
-      actionGroups: ${{ parameters.actionGroups }}
-      enableProduction: ${{ parameters.enableProduction }}
-      runReviewStage: ${{ parameters.runReviewStage }}
-      drInvocation: ${{ parameters.drInvocation }}
-      variableRoot: vars
-      variables:
-        includeCommon: true
-        includeEnv: true
-        includeEnvRegion: true
-        includeRegion: true
-      variableGroups:
-        - "Common-Variables"
-      validation:
-        enableVariableIncludes: true
-      additionalRepositories:
-        # - alias: Modules
-      keyVault:
-        name: ""
-        secretsFilter: ""
+    ${{ each parameter in parameters }}:
+      ${{ parameter.key }}: ${{ parameter.value }}
+    # Default Overrides
+    variables:
+      includeCommon: true
+      includeEnv: true
+      includeEnvRegion: true
+      includeRegion: true
