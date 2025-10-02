@@ -44,7 +44,7 @@ extends:
         includeEnvRegion: true
         includeRegion: true
 
-    # Environment Override
+    # Environments Override
     # environments:
     #   - name: dev
     #     class: development
@@ -57,5 +57,5 @@ extends:
     #       - "*"
     #     pool:
     #       vmImage: "ubuntu-latest"
-    #     skipEnvironment: ${{ parameters.skip_environments.dev }}
+    #     skipEnvironment: ${{ parameters.skipEnvironments.dev }}
     #     poolRegionDemand: false
