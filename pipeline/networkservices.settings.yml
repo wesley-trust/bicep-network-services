@@ -13,15 +13,15 @@ parameters:
   - name: drInvocation
     type: boolean
     default: false
-  # - name: skip_dev
-  #   type: boolean
-  #   default: false
-  # - name: skip_qa
-  #   type: boolean
-  #   default: false
-  # - name: skip_preprod
-  #   type: boolean
-  #   default: false
+  - name: skip_dev
+    type: boolean
+    default: false
+  - name: skip_qa
+    type: boolean
+    default: false
+  - name: skip_preprod
+    type: boolean
+    default: false
 
 resources:
   repositories:
@@ -35,8 +35,6 @@ extends:
   template: /templates/pipeline-dispatcher.yml@PipelineDispatcher
   parameters:
     configuration:
-      ${{ each parameter in parameters }}:
-        ${{ parameter.key }}: ${{ parameter.value }}
       defaultPool:
         vmImage: "ubuntu-latest"
       serviceConnection: serviceConnection
@@ -52,7 +50,7 @@ extends:
             - "*"
           pool:
             vmImage: "ubuntu-latest"
-          # skipEnvironment: ${{ parameters.skip_dev }}
+          skipEnvironment: ${{ parameters.skip_dev }}
           poolRegionDemand: false
         - name: qa
           class: test
@@ -63,7 +61,7 @@ extends:
             - "release/*"
           pool:
             vmImage: "ubuntu-latest"
-          # skipEnvironment: ${{ parameters.skip_qa }}
+          skipEnvironment: ${{ parameters.skip_qa }}
           poolRegionDemand: false
         - name: ppr
           class: acceptance
@@ -76,7 +74,7 @@ extends:
             - "release/*"
           pool:
             vmImage: "ubuntu-latest"
-          # skipEnvironment: ${{ parameters.skip_preprod }}
+          skipEnvironment: ${{ parameters.skip_preprod }}
           poolRegionDemand: false
         - name: prd
           class: production
@@ -89,10 +87,10 @@ extends:
           pool:
             vmImage: "ubuntu-latest"
           poolRegionDemand: true
-      # actionGroups: ${{ parameters.actionGroups }}
-      # enableProduction: ${{ parameters.enableProduction }}
-      # runReviewStage: ${{ parameters.runReviewStage }}
-      # drInvocation: ${{ parameters.drInvocation }}
+      actionGroups: ${{ parameters.actionGroups }}
+      enableProduction: ${{ parameters.enableProduction }}
+      runReviewStage: ${{ parameters.runReviewStage }}
+      drInvocation: ${{ parameters.drInvocation }}
       variableRoot: vars
       variables:
         includeCommon: true

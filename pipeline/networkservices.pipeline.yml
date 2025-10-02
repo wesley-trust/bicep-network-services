@@ -86,9 +86,9 @@ extends:
     enableProduction: ${{ parameters.enableProduction }}
     runReviewStage: ${{ not(parameters.doNotRunReviewStage) }}
     drInvocation: ${{ parameters.drInvocation }}
-    # skip_dev: ${{ parameters.skip_dev }}
-    # skip_qa: ${{ parameters.skip_qa }}
-    # skip_preprod: ${{ parameters.skip_preprod }}
+    skip_dev: ${{ parameters.skip_dev }}
+    skip_qa: ${{ parameters.skip_qa }}
+    skip_preprod: ${{ parameters.skip_preprod }}
     actionGroups:
       - name: bicep_actions
         enabled: ${{ not(parameters.doNotRunBicepActions) }}
