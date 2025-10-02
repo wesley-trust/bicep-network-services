@@ -11,7 +11,7 @@ parameters:
   - name: drInvocation
     type: boolean
     default: false
-  - name: skip_environments
+  - name: skipEnvironments
     type: object
     default:
       dev: false
@@ -28,13 +28,34 @@ resources:
       #ref: "refs/heads/main"
 
 extends:
-  template: /templates/pipeline-defaults.yml@PipelineDispatcher
+  template: /templates/pipeline-configuration-dispatcher.yml@PipelineDispatcher
   parameters:
-    ${{ each parameter in parameters }}:
-      ${{ parameter.key }}: ${{ parameter.value }}
-    # Default Overrides
-    variables:
-      includeCommon: true
-      includeEnv: true
-      includeEnvRegion: true
-      includeRegion: true
+    skipEnvironments: ${{ parameters.skipEnvironments }}
+    configuration:
+      actionGroups: ${{ parameters.actionGroups }}
+      enableProduction: ${{ parameters.enableProduction }}
+      runReviewStage: ${{ parameters.runReviewStage }}
+      drInvocation: ${{ parameters.drInvocation }}
+
+      # Configuration Override
+      variables:
+        includeCommon: true
+        includeEnv: true
+        includeEnvRegion: true
+        includeRegion: true
+
+    # Environment Override
+    # environments:
+    #   - name: dev
+    #     class: development
+    #     dependsOnSecondaryRegions: false
+    #     primaryRegion: weu
+    #     secondaryRegions:
+    #       - neu
+    #     drRegion: neu
+    #     allowedBranches:
+    #       - "*"
+    #     pool:
+    #       vmImage: "ubuntu-latest"
+    #     skipEnvironment: ${{ parameters.skip_environments.dev }}
+    #     poolRegionDemand: false

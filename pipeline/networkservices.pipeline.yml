@@ -84,7 +84,7 @@ extends:
     enableProduction: ${{ parameters.enableProduction }}
     runReviewStage: ${{ not(parameters.doNotRunReviewStage) }}
     drInvocation: ${{ parameters.drInvocation }}
-    skip_environments:
+    skipEnvironments:
       dev: ${{ parameters.skip_dev }}
       qa: ${{ parameters.skip_qa }}
       ppr: ${{ parameters.skip_ppr }}
