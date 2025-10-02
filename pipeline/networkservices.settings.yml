@@ -36,7 +36,7 @@ extends:
   parameters:
     configuration:
       ${{ each parameter in parameters }}:
-        ${{ parameter.name }}: ${{ parameter.value }}
+        ${{ parameter.key }}: ${{ parameter.value }}
       defaultPool:
         vmImage: "ubuntu-latest"
       serviceConnection: serviceConnection
