@@ -11,8 +11,6 @@ var normalizedTags = empty(tags) ? null : tags
 // Route Table
 @description('Flag to determine whether to deploy the route table. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
 param deployRouteTableString string
-
-@description('Convert the deployRouteTableString parameter to a boolean value.')
 var deployRouteTable = bool(deployRouteTableString)
 
 @description('Array of route tables to create.')
@@ -32,8 +30,6 @@ module routeTable 'br/public:avm/res/network/route-table:0.5.0' = [
 // Network Security Group
 @description('Flag to determine whether to deploy the network security group. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
 param deployNetworkSecurityGroupString string
-
-@description('Convert the deployNetworkSecurityGroupString parameter to a boolean value.')
 var deployNetworkSecurityGroup = bool(deployNetworkSecurityGroupString)
 
 @description('Array of network security groups to create.')
@@ -53,8 +49,6 @@ module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.
 // Virtual Network
 @description('Flag to determine whether to deploy the virtual network spoke. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
 param deployVirtualNetworkString string
-
-@description('Convert the deployVirtualNetworkString parameter to a boolean value.')
 var deployVirtualNetwork = bool(deployVirtualNetworkString)
 
 @description('Name of the virtual network spoke to create.')

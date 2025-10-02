@@ -1,3 +1,4 @@
+# Common/shared variables
 variables:
   regionCode: weu
   region: westeurope

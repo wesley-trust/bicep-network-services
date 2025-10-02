@@ -24,7 +24,7 @@ variables:
   subnetInstanceVersion: 001
 
   ## Subnet: snet-001
-  snet-001-service: "ca"
+  snet-001-service: "cae"
   snet-001-name: snet-$(service)-$(environment)-$(regionCode)-vnet-$(vNetInstanceVersion)-$(snet-001-service)-$(subnetInstanceVersion)
 
   # Route Table configuration
