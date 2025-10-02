@@ -7,7 +7,7 @@ variables:
   owner: platform-team
 
   # Resource Group configuration
-  deployResourceGroup: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
+  deployResourceGroup: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter, any dependent resources will fail to deploy
   deploymentVersion: 001
   resourceGroup: rg-$(service)-$(environment)-$(regionCode)-$(deploymentVersion)
 

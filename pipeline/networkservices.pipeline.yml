@@ -1,5 +1,3 @@
-# Example Bicep deploy plus post-deploy Pester tests
-
 parameters:
   # Global flags
   - name: enableProduction
@@ -67,18 +65,18 @@ parameters:
     default: false
 
   # Environment skips
-  # - name: skip_dev
-  #   displayName: "Skip Environment: Development"
-  #   type: boolean
-  #   default: false
-  # - name: skip_qa
-  #   displayName: "Skip Environment: QA"
-  #   type: boolean
-  #   default: true
-  # - name: skip_preprod
-  #   displayName: "Skip Environment: Pre-Production"
-  #   type: boolean
-  #   default: true
+  - name: skip_dev
+    displayName: "Skip Environment: Development"
+    type: boolean
+    default: false
+  - name: skip_qa
+    displayName: "Skip Environment: QA"
+    type: boolean
+    default: true
+  - name: skip_ppr
+    displayName: "Skip Environment: Pre-Production"
+    type: boolean
+    default: true
 
 extends:
   template: networkservices.settings.yml
@@ -86,9 +84,10 @@ extends:
     enableProduction: ${{ parameters.enableProduction }}
     runReviewStage: ${{ not(parameters.doNotRunReviewStage) }}
     drInvocation: ${{ parameters.drInvocation }}
-    skip_dev: ${{ parameters.skip_dev }}
-    skip_qa: ${{ parameters.skip_qa }}
-    skip_preprod: ${{ parameters.skip_preprod }}
+    skipEnvironments:
+      dev: ${{ parameters.skip_dev }}
+      qa: ${{ parameters.skip_qa }}
+      ppr: ${{ parameters.skip_ppr }}
     actionGroups:
       - name: bicep_actions
         enabled: ${{ not(parameters.doNotRunBicepActions) }}
