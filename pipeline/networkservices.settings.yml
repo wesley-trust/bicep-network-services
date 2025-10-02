@@ -24,8 +24,7 @@ resources:
       type: github
       endpoint: wesley-trust
       name: wesley-trust/pipeline-dispatcher
-      ref: "refs/heads/feature/default-settings"
-      #ref: "refs/heads/main"
+      ref: "refs/heads/main"
 
 extends:
   template: /templates/pipeline-configuration-dispatcher.yml@PipelineDispatcher
