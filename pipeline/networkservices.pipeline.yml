@@ -86,7 +86,7 @@ parameters:
   - name: skip_secondary
     displayName: "Skip Regions: Secondary"
     type: boolean
-    default: true
+    default: false
 
 extends:
   template: networkservices.settings.yml
