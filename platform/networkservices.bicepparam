@@ -89,6 +89,7 @@ param subnets = [
   {
     name: '#{{ snet-001-name }}'
     addressPrefix: '#{{ snet-001-addressPrefix }}'
+    delegation: 'Microsoft.App/environments'
   }
 ]
 
