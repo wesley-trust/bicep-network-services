@@ -17,6 +17,11 @@ parameters:
       dev: false
       qa: false
       ppr: false
+  - name: skipRegions
+    type: object
+    default:
+      primary: false
+      secondary: false
 
 resources:
   repositories:
@@ -30,6 +35,7 @@ extends:
   template: /templates/pipeline-configuration-dispatcher.yml@PipelineDispatcher
   parameters:
     skipEnvironments: ${{ parameters.skipEnvironments }}
+    skipRegions: ${{ parameters.skipRegions }}
     configuration:
       actionGroups: ${{ parameters.actionGroups }}
       enableProduction: ${{ parameters.enableProduction }}

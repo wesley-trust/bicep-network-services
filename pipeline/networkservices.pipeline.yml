@@ -66,15 +66,25 @@ parameters:
 
   # Environment skips
   - name: skip_dev
-    displayName: "Skip Environment: Development"
+    displayName: "Skip Environments: Development"
     type: boolean
     default: false
   - name: skip_qa
-    displayName: "Skip Environment: QA"
+    displayName: "Skip Environments: QA"
     type: boolean
     default: true
   - name: skip_ppr
-    displayName: "Skip Environment: Pre-Production"
+    displayName: "Skip Environments: Pre-Production"
+    type: boolean
+    default: true
+
+  # Region skips
+  - name: skip_primary
+    displayName: "Skip Regions: Primary"
+    type: boolean
+    default: false
+  - name: skip_secondary
+    displayName: "Skip Regions: Secondary"
     type: boolean
     default: true
 
@@ -88,6 +98,9 @@ extends:
       dev: ${{ parameters.skip_dev }}
       qa: ${{ parameters.skip_qa }}
       ppr: ${{ parameters.skip_ppr }}
+    skipRegions:
+      primary: ${{ parameters.skip_primary }}
+      secondary: ${{ parameters.skip_secondary }}
     actionGroups:
       - name: bicep_actions
         enabled: ${{ not(parameters.doNotRunBicepActions) }}
