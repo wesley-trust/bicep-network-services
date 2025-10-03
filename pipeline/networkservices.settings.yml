@@ -56,5 +56,4 @@ extends:
     #       - "*"
     #     pool:
     #       vmImage: "ubuntu-latest"
-    #     skipEnvironment: ${{ parameters.skipEnvironments.dev }}
     #     poolRegionDemand: false
