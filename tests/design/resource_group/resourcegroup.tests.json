@@ -8,7 +8,7 @@
     },
     "resources": [
       {
-        "name": "rg-network-dev-neu-001",
+        "name": "rg-network-dev-weu-001",
         "location": "westeurope"
       }
     ]
