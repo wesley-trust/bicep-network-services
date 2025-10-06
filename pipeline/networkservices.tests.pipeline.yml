@@ -3,29 +3,9 @@ parameters:
   - name: enableProduction
     displayName: "Enable Production"
     type: boolean
-    default: false
+    default: true
   - name: drInvocation
     displayName: "Invoke Pipeline DR Operation"
-    type: boolean
-    default: false
-
-  # Pipeline-level controls
-  - name: doNotRunReviewStage
-    displayName: "Temporarily Skip Review Stage"
-    type: boolean
-    default: false
-
-  # Bicep action group toggles
-  - name: doNotRunBicepActions
-    displayName: "Bicep Actions: Skip All"
-    type: boolean
-    default: false
-  - name: doNotRunResourceGroup
-    displayName: "Bicep Actions: Skip Resource Group"
-    type: boolean
-    default: false
-  - name: doNotRunNetworkServices
-    displayName: "Bicep Actions: Skip Network Services"
     type: boolean
     default: false
 
@@ -96,7 +76,6 @@ extends:
   template: networkservices.settings.yml
   parameters:
     enableProduction: ${{ parameters.enableProduction }}
-    runReviewStage: ${{ not(parameters.doNotRunReviewStage) }}
     drInvocation: ${{ parameters.drInvocation }}
     skipEnvironments:
       dev: ${{ parameters.skip_dev }}
@@ -106,36 +85,11 @@ extends:
       primary: ${{ parameters.skip_primary }}
       secondary: ${{ parameters.skip_secondary }}
     actionGroups:
-      - name: bicep_actions
-        enabled: ${{ not(parameters.doNotRunBicepActions) }}
-        type: bicep
-        tokenReplaceEnabled: true
-        actions:
-          - name: resource_group
-            enabled: ${{ not(parameters.doNotRunResourceGroup) }}
-            scope: subscription
-            resourceGroupName: $(resourceGroup)
-            location: $(region)
-            allowDeleteOnUnmanage: ${{ parameters.allowDeleteOnUnmanage}}
-            cleanupStack: ${{ parameters.cleanupResourceGroupStack }}
-            templatePath: platform/resourcegroup.bicep
-            parametersPath: platform/resourcegroup.bicepparam
-          - name: network_services
-            enabled: ${{ not(parameters.doNotRunNetworkServices) }}
-            scope: resourceGroup
-            resourceGroupName: $(resourceGroup)
-            location: $(region)
-            allowDeleteOnUnmanage: ${{ parameters.allowDeleteOnUnmanage }}
-            templatePath: platform/networkservices.bicep
-            parametersPath: platform/networkservices.bicepparam
       - name: bicep_tests_resource_group
         enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
         type: powershell
         scriptTask: azureCli
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
-        ${{ if not(parameters.doNotRunBicepActions) }}:
-          dependsOn:
-            - bicep_actions
         actions:
           - name: regression
             enabled: ${{ not(parameters.doNotRunRegression) }}
@@ -150,9 +104,6 @@ extends:
         type: powershell
         scriptTask: azureCli
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
-        ${{ if not(parameters.doNotRunBicepActions) }}:
-          dependsOn:
-            - bicep_actions
         actions:
           - name: regression
             enabled: ${{ not(parameters.doNotRunRegression) }}
