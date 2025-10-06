@@ -29,7 +29,7 @@ try {
     -ApplicationId $env:servicePrincipalId `
     -FederatedToken $env:idToken
 
-  Invoke-Pester -Path $TestsPath -Output Detailed -OutputFormat $ResultsFormat -OutputFile $ResultsFile -EnableExit
+  Invoke-Pester -Path $TestsPath -OutputFormat $ResultsFormat -OutputFile $ResultsFile -EnableExit
 }
 catch {
   Write-Error $_
