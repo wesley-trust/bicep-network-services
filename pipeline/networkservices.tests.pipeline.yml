@@ -102,6 +102,7 @@ extends:
         scriptTask: azureCli
         kind: pester
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
+        tokenReplaceEnabled: true
         tokenTargetPatterns:
           - platform/resourcegroup.bicepparam
           - tests/design/resource_group/resourcegroup.tests.json
