@@ -19,15 +19,16 @@ BeforeDiscovery {
 
 BeforeAll {
   # Generate Bicep What-If
-  $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print | ConvertFrom-Json
+  $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print
 
   if (!$WhatIf) {
     throw "What-If operation failed or returned no results."
   }
   else {
     if ($ENV:PUBLISHTESTARTIFACTS) {
-      $WhatIf | ConvertTo-Json | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.whatif.json"
+      $WhatIf | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.whatif.json"
     }
+    $WhatIfObject = $WhatIf | ConvertFrom-Json
   }
 }
 
