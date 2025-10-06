@@ -1,0 +1,38 @@
+[
+  {
+    "resourceType": "Microsoft.Resources/resourceGroups",
+    "tags": {
+      "environment": "dev",
+      "owner": "platform-team",
+      "service": "container"
+    },
+    "resources": [
+      {
+        "name": "rg-platform-core-uks",
+        "location": "uksouth"
+      },
+      {
+        "name": "rg-platform-core-ukw",
+        "location": "ukwest"
+      }
+    ]
+  },
+  {
+    "resourceType": "Microsoft.Network/virtualNetworks",
+    "tags": {
+      "environment": "dev",
+      "owner": "platform-team",
+      "service": "container"
+    },
+    "resources": [
+      {
+        "name": "rg-network-core-uks",
+        "location": "uksouth"
+      },
+      {
+        "name": "rg-network-core-ukw",
+        "location": "ukwest"
+      }
+    ]
+  }
+]
