@@ -25,7 +25,9 @@ BeforeAll {
     throw "What-If operation failed or returned no results."
   }
   else {
-    $WhatIf
+    if ($ENV:publishTestArtifacts) {
+      $WhatIf | ConvertTo-Json | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.whatif.json"
+    }
   }
 }
 

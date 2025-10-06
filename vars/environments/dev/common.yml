@@ -1,3 +1,4 @@
 # Common/shared variables
 variables:
   environment: dev
+  publishTestArtifacts: true
