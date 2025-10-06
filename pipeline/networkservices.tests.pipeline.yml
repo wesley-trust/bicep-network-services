@@ -107,22 +107,22 @@ extends:
           - platform/resourcegroup.bicepparam
           - tests/design/resource_group/resourcegroup.tests.json
         actions:
-          - name: unit
+          - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/unit/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_unit.xml"
-          - name: integration
+            arguments: "-TestsPath tests/unit/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_unit_tests.xml"
+          - name: integration_tests
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/integration/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_integration.xml"
-          - name: regression
+            arguments: "-TestsPath tests/integration/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_integration_tests.xml"
+          - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/regression/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_regression.xml"
-          - name: smoke
+            arguments: "-TestsPath tests/regression/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_regression_tests.xml"
+          - name: smoke_tests
             enabled: ${{ not(parameters.doNotRunSmoke) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/smoke/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_smoke.xml"
+            arguments: "-TestsPath tests/smoke/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_resource_group_smoke_tests.xml"
       - name: bicep_tests_network_services
         enabled: ${{ not(parameters.doNotRunBicepTestsNetworkServices) }}
         type: powershell
@@ -130,19 +130,19 @@ extends:
         kind: pester
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
         actions:
-          - name: unit
+          - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/unit/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_unit.xml"
-          - name: integration
+            arguments: "-TestsPath tests/unit/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_unit_tests.xml"
+          - name: integration_tests
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/integration/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_integration.xml"
-          - name: regression
+            arguments: "-TestsPath tests/integration/resource_group -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_integration_tests.xml"
+          - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/regression/network_services -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_regression.xml"
-          - name: smoke
+            arguments: "-TestsPath tests/regression/network_services -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_regression_tests.xml"
+          - name: smoke_tests
             enabled: ${{ not(parameters.doNotRunSmoke) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/smoke/network_services -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_smoke.xml"
+            arguments: "-TestsPath tests/smoke/network_services -TestData @{Location = '$(region)'} -ResultsFile TestResults/bicep_tests_network_services_smoke_tests.xml"

@@ -65,6 +65,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
   Context "Integrity Check" {
     It "should have at least one Resource" {
+      Write-Host $Resources
       $Resources.Count | Should -BeGreaterThan 0
     }
   }
@@ -98,6 +99,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     Context "Properties" {
       It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         $Property = $_
+        Write-Host $Property
         $WhatIfResource.$Property.Name | Should -BeExactly $Property.Value
       }
     }
@@ -105,6 +107,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     Context "Tags" {
       It "should have tag '<_.Name>' with value '<_.Value>'" -ForEach $TagsObject {
         $Tag = $_
+        Write-Host $Tag
+        Write-Host $WhatIfResource
         $WhatIfResource.Tags.$Tag.Name | Should -BeExactly $Tag.Value
       }
     }
