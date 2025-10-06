@@ -36,7 +36,7 @@ try {
   }
 
   $configuration = New-PesterConfiguration
-  $configuration.Run.Containers = @((New-PesterContainer @containerArgs))
+  $configuration.Run.Container = @(New-PesterContainer @containerArgs)
   $configuration.Run.Exit = $true
   $configuration.TestResult.Enabled = $true
   $configuration.TestResult.OutputFormat = $ResultsFormat
