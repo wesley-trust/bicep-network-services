@@ -21,14 +21,17 @@ BeforeAll {
   # Generate Bicep What-If
   $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print
 
-  if (!$WhatIf) {
-    throw "What-If operation failed or returned no results."
-  }
-  else {
+  # Create WhatIfObject if WhatIf is not null or empty, and optionally publish artifact
+  if ($WhatIf) {
     if ($ENV:PUBLISHTESTARTIFACTS) {
       $WhatIf | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.whatif.json"
     }
     $WhatIfObject = $WhatIf | ConvertFrom-Json
+
+    $script:BicepChangesAfter = $WhatIfObject.changes.after
+  }
+  else {
+    throw "What-If operation failed or returned no results."
   }
 }
 
@@ -42,7 +45,7 @@ Describe "Resource Design" {
 
 Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   $ResourceType = $_
-
+  
   BeforeDiscovery {
     
     $script:Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
@@ -52,6 +55,10 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
       $Tags.PSObject.Properties |
       ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
     )
+  }
+
+  BeforeAll {
+    $script:WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
   }
 
   Context "Integrity Check" {
@@ -70,6 +77,10 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
       )
     }
 
+    BeforeAll {
+      $script:WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
+    }
+
     Context "Integrity Check" {
       It "should have at least one Property" {
         $PropertiesObject.Count | Should -BeGreaterThan 0
@@ -82,14 +93,14 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     Context "Properties" {
       It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         $Property = $_
-        $Property.Value | Should -Not -BeNullOrEmpty
+        $WhatIfResource.$Property.Name | Should -BeExactly $Property.Value
       }
     }
 
     Context "Tags" {
       It "should have tag '<_.Name>' with value '<_.Value>'" -ForEach $TagsObject {
         $Tag = $_
-        $Tag.Value | Should -Not -BeNullOrEmpty
+        $WhatIfResource.Tags.$Tag.Name | Should -BeExactly $Tag.Value
       }
     }
   }
