@@ -32,7 +32,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     $script:TagsObject = @(
       $Tags.PSObject.Properties |
-      ForEach-Object { [pscustomobject]@{ Name = $_.Name; Value = $_.Value } }
+      ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
     )
   }
 
@@ -46,12 +46,15 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     $Resource = $_
 
     BeforeDiscovery {
-      $script:Properties = $Resource.PSObject.Properties.Name
+      $script:PropertiesObject = @(
+        $Resource.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
     }
 
     Context "Integrity Check" {
       It "should have at least one Property" {
-        $Properties.Count | Should -BeGreaterThan 0
+        $PropertiesObject.Count | Should -BeGreaterThan 0
       }
       It "should have at least one Tag" {
         $TagsObject.Count | Should -BeGreaterThan 0
@@ -59,9 +62,9 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     }
 
     Context "Properties" {
-      It "should have property '<_>'" -ForEach $Properties {
+      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         $Property = $_
-        $Property | Should -Not -BeNullOrEmpty
+        $Property.Value | Should -Not -BeNullOrEmpty
       }
     }
 
@@ -75,7 +78,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 }
 
 AfterAll {
-  $script:Properties = $null
+  $script:PropertiesObject = $null
+  $script:TagsObject = $null
   $script:Resources = $null
   $script:Design = $null
   $script:ResourceTypes = $null

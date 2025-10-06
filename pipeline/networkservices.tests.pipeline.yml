@@ -18,6 +18,14 @@ parameters:
     displayName: "Bicep Tests: Skip Network Services"
     type: boolean
     default: false
+  - name: doNotRunUnit
+    displayName: "Bicep Tests: Skip Unit"
+    type: boolean
+    default: false
+  - name: doNotRunIntegration
+    displayName: "Bicep Tests: Skip Integration"
+    type: boolean
+    default: false
   - name: doNotRunRegression
     displayName: "Bicep Tests: Skip Regression"
     type: boolean
@@ -95,6 +103,14 @@ extends:
         kind: pester
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
         actions:
+          - name: unit
+            enabled: ${{ not(parameters.doNotRunUnit) }}
+            scriptPath: scripts/pester_run.ps1
+            arguments: "-TestsPath tests/unit/resource_group -ResultsFile TestResults/bicep_tests_resource_group_unit.xml"
+          - name: integration
+            enabled: ${{ not(parameters.doNotRunIntegration) }}
+            scriptPath: scripts/pester_run.ps1
+            arguments: "-TestsPath tests/integration/resource_group -ResultsFile TestResults/bicep_tests_resource_group_integration.xml"
           - name: regression
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
@@ -110,6 +126,14 @@ extends:
         kind: pester
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
         actions:
+          - name: unit
+            enabled: ${{ not(parameters.doNotRunUnit) }}
+            scriptPath: scripts/pester_run.ps1
+            arguments: "-TestsPath tests/unit/resource_group -ResultsFile TestResults/bicep_tests_network_services_unit.xml"
+          - name: integration
+            enabled: ${{ not(parameters.doNotRunIntegration) }}
+            scriptPath: scripts/pester_run.ps1
+            arguments: "-TestsPath tests/integration/resource_group -ResultsFile TestResults/bicep_tests_network_services_integration.xml"
           - name: regression
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
