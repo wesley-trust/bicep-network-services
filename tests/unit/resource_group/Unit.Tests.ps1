@@ -50,12 +50,10 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   BeforeDiscovery {
     $ResourceType = $_
 
-    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
-    #$script:Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $script:Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
     $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
 
-    #$script:TagsObject = @(
-    $TagsObject = @(
+    $script:TagsObject = @(
       $Tags.PSObject.Properties |
       ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
     )
@@ -79,8 +77,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     BeforeDiscovery {
       $Resource = $_
 
-      #$script:PropertiesObject = @(
-      $PropertiesObject = @(
+      $script:PropertiesObject = @(
         $Resource.PSObject.Properties |
         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
       )
