@@ -76,6 +76,7 @@ extends:
   template: networkservices.settings.yml
   parameters:
     enableProduction: ${{ parameters.enableProduction }}
+    runReviewStage: false
     drInvocation: ${{ parameters.drInvocation }}
     skipEnvironments:
       dev: ${{ parameters.skip_dev }}
