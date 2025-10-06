@@ -22,6 +22,9 @@ parameters:
     default:
       primary: false
       secondary: false
+  - name: globalDependsOn
+    type: string
+    default: ""
 
 resources:
   repositories:
@@ -36,6 +39,7 @@ extends:
   parameters:
     skipEnvironments: ${{ parameters.skipEnvironments }}
     skipRegions: ${{ parameters.skipRegions }}
+    globalDependsOn: ${{ parameters.globalDependsOn }}
     configuration:
       actionGroups: ${{ parameters.actionGroups }}
       enableProduction: ${{ parameters.enableProduction }}

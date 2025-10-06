@@ -85,6 +85,7 @@ extends:
     skipRegions:
       primary: ${{ parameters.skip_primary }}
       secondary: ${{ parameters.skip_secondary }}
+    globalDependsOn: validation
     actionGroups:
       - name: bicep_tests_resource_group
         enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
