@@ -83,7 +83,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     BeforeAll {
       $Resource = $_
-      
+      Write-Host "Resources"
+      Write-Host $WhatIfResources
       $script:WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
     }
 
@@ -99,10 +100,15 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     Context "Properties" {
       It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         $Property = $_
+        Write-Host "Property"
         Write-Host $Property
+        Write-Host "Property Name"
         Write-Host $Property.Name
+        Write-Host "Property Value"
         Write-Host $Property.Value
+        Write-Host "WhatIf Resource Name"
         Write-Host $WhatIfResource.Name
+        Write-Host "WhatIf Resource Value"
         Write-Host $WhatIfResource.Value
         $WhatIfResource.Name | Should -BeExactly $Property.Value
       }
@@ -111,7 +117,9 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     Context "Tags" {
       It "should have tag '<_.Name>' with value '<_.Value>'" -ForEach $TagsObject {
         $Tag = $_
+        Write-Host "Tag"
         Write-Host $Tag
+        Write-Host "WhatIf Resource"
         Write-Host $WhatIfResource
         $WhatIfResource.Tags.$Tag.Name | Should -BeExactly $Tag.Value
       }
