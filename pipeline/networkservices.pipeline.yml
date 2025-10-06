@@ -132,6 +132,7 @@ extends:
         enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
         type: powershell
         scriptTask: azureCli
+        kind: pester
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
         ${{ if not(parameters.doNotRunBicepActions) }}:
           dependsOn:
@@ -140,15 +141,16 @@ extends:
           - name: regression
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/regression/resource_group -ResultsFile TestResults/pester.regression.xml"
+            arguments: "-TestsPath tests/regression/resource_group -ResultsFile TestResults/bicep_tests_resource_group_regression.xml"
           - name: smoke
             enabled: ${{ not(parameters.doNotRunSmoke) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/smoke/resource_group -ResultsFile TestResults/pester.smoke.xml"
+            arguments: "-TestsPath tests/smoke/resource_group -ResultsFile TestResults/bicep_tests_resource_group_smoke.xml"
       - name: bicep_tests_network_services
         enabled: ${{ not(parameters.doNotRunBicepTestsNetworkServices) }}
         type: powershell
         scriptTask: azureCli
+        kind: pester
         delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
         ${{ if not(parameters.doNotRunBicepActions) }}:
           dependsOn:
@@ -157,8 +159,8 @@ extends:
           - name: regression
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/regression/network_services -ResultsFile TestResults/pester.regression.xml"
+            arguments: "-TestsPath tests/regression/network_services -ResultsFile TestResults/bicep_tests_network_services_regression.xml"
           - name: smoke
             enabled: ${{ not(parameters.doNotRunSmoke) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/smoke/network_services -ResultsFile TestResults/pester.smoke.xml"
+            arguments: "-TestsPath tests/smoke/network_services -ResultsFile TestResults/bicep_tests_network_services_smoke.xml"
