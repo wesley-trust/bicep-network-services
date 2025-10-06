@@ -2,14 +2,14 @@
   {
     "resourceType": "Microsoft.Resources/resourceGroups",
     "tags": {
-      "environment": "dev",
+      "environment": "#{{ environment }}",
       "owner": "platform-team",
       "service": "network"
     },
     "resources": [
       {
-        "name": "rg-network-dev-weu-001",
-        "location": "westeurope"
+        "name": "rg-network-#{{ environment }}-#{{ regionCode }}-001",
+        "location": "#{{ region }}"
       }
     ]
   }
