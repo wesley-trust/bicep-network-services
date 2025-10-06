@@ -25,6 +25,9 @@ parameters:
   - name: globalDependsOn
     type: string
     default: ""
+  - name: pipelineType
+    type: string
+    default: ""
 
 resources:
   repositories:
@@ -47,6 +50,7 @@ extends:
       drInvocation: ${{ parameters.drInvocation }}
 
       # Configuration Override
+      pipelineType: ${{ parameters.pipelineType }}
       variables:
         includeCommon: true
         includeEnv: true

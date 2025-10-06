@@ -3,7 +3,7 @@ parameters:
   - name: enableProduction
     displayName: "Enable Production"
     type: boolean
-    default: true
+    default: false
   - name: drInvocation
     displayName: "Invoke Pipeline DR Operation"
     type: boolean
@@ -86,6 +86,7 @@ extends:
       primary: ${{ parameters.skip_primary }}
       secondary: ${{ parameters.skip_secondary }}
     globalDependsOn: validation
+    pipelineType: auto
     actionGroups:
       - name: bicep_tests_resource_group
         enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
