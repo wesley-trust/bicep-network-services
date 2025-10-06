@@ -44,10 +44,11 @@ Describe "Resource Design" {
 }
 
 Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
-  $ResourceType = $_
-  
+  param($ResourceType)
+
   BeforeDiscovery {
-    
+    #$ResourceType = $_
+
     $script:Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
     $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
 
@@ -58,6 +59,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   }
 
   BeforeAll {
+    #$ResourceType = $_
+    
     $script:WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
   }
 
@@ -68,9 +71,11 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   }
 
   Context "Resource Name '<_.name>'" -ForEach $Resources {
-    $Resource = $_
+    param($Resource)
 
     BeforeDiscovery {
+      #$Resource = $_
+      
       $script:PropertiesObject = @(
         $Resource.PSObject.Properties |
         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
@@ -78,6 +83,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     }
 
     BeforeAll {
+      #$Resource = $_
+      
       $script:WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
     }
 
