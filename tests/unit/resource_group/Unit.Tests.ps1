@@ -3,7 +3,7 @@ Param(
   [string]$DesignPath = "./tests/design/resource_group/resourcegroup.tests.json",
   [string]$Location,
   [string]$ResourceGroupTemplateFile = "./platform/resourcegroup.bicep",
-  [string]$ResourceGroupParameterFile = "./platform/resourcegroup.parameters.bicepparam"
+  [string]$ResourceGroupParameterFile = "./platform/resourcegroup.bicepparam"
 )
 
 BeforeDiscovery {
