@@ -50,10 +50,12 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   BeforeDiscovery {
     $ResourceType = $_
 
-    $script:Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    #$script:Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
     $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
 
-    $script:TagsObject = @(
+    #$script:TagsObject = @(
+    $TagsObject = @(
       $Tags.PSObject.Properties |
       ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
     )
@@ -62,7 +64,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   BeforeAll {
     $ResourceType = $_
     
-    $script:WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
+    #$script:WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
+    $WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
   }
 
   Context "Integrity Check" {
@@ -76,7 +79,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     BeforeDiscovery {
       $Resource = $_
 
-      $script:PropertiesObject = @(
+      #$script:PropertiesObject = @(
+      $PropertiesObject = @(
         $Resource.PSObject.Properties |
         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
       )
@@ -84,7 +88,8 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     BeforeAll {
       $Resource = $_
-      $script:WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
+      #$script:WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
+      $WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
     }
 
     Context "Integrity Check" {
@@ -109,13 +114,20 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         $WhatIfResource.Tags.$($Tag.Name) | Should -BeExactly $Tag.Value
       }
     }
+    AfterAll {
+      $script:PropertiesObject = $null
+      $script:WhatIfResource = $null
+    }
+  }
+  AfterAll {
+    $script:Resources = $null
+    $script:TagsObject = $null
+    $script:WhatIfResources = $null
   }
 }
 
 AfterAll {
-  $script:PropertiesObject = $null
-  $script:TagsObject = $null
-  $script:Resources = $null
   $script:Design = $null
   $script:ResourceTypes = $null
+  $script:BicepChangesAfter = $null
 }
