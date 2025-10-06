@@ -21,7 +21,9 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 3. The dispatcher merges defaults, declares `PipelineCommon`, and calls `templates/main.yml@PipelineCommon` with the composed `configuration` object.
 4. Action groups:
    - `bicep_actions` – deploys the resource group followed by the network services Bicep module, with optional cleanup and delete-on-unmanage toggles.
-   - `bicep_tests` – executes the Pester suites through Azure CLI, optionally depending on the deployment action group.
+   - `bicep_tests_resource_group` and `bicep_tests_network_services` – execute Pester suites through Azure CLI. Both groups set `kind: pester`, so `pipeline-common` publishes the generated NUnit results from `TestResults/<actionGroup>_<action>.xml` automatically.
+
+The dedicated tests pipeline (`networkservices.tests.pipeline.yml`) passes `pipelineType: auto`, which appends an `-AUTO` suffix to the Azure DevOps environment name and allows the automated test lane to run without manual approvals.
 
 ## Local Development
 - Install PowerShell 7, Azure CLI (with Bicep CLI support), and the Az PowerShell module to mirror pipeline execution.
