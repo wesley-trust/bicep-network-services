@@ -1,6 +1,9 @@
 [CmdletBinding()]
 Param(
-  [string]$DesignPath = "./tests/design/resource_group/resourcegroup.tests.json"
+  [string]$DesignPath = "./tests/design/resource_group/resourcegroup.tests.json",
+  [string]$Location,
+  [string]$ResourceGroupTemplateFile = "./platform/resourcegroup.bicep",
+  [string]$ResourceGroupParameterFile = "./platform/resourcegroup.parameters.json"
 )
 
 BeforeDiscovery {
@@ -12,6 +15,18 @@ BeforeDiscovery {
 
   # Get unique Resource Types
   $script:ResourceTypes = $Design.resourceType | Sort-Object -Unique
+}
+
+BeforeAll {
+  # Generate Bicep What-If
+  $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print | ConvertFrom-Json
+
+  if (!$WhatIf) {
+    throw "What-If operation failed or returned no results."
+  }
+  else {
+    $WhatIf
+  }
 }
 
 Describe "Resource Design" {
