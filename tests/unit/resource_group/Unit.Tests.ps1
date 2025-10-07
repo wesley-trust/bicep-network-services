@@ -52,6 +52,7 @@ BeforeAll {
 Describe "Resource Design" {
   Context "Integrity Check" {
     It "should have at least one Resource Type" {
+      write-host $ResourceTypes
       $ResourceTypes.Count | Should -BeGreaterThan 0
     }
   }
