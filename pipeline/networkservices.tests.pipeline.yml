@@ -92,9 +92,8 @@ extends:
         kind: pester
         tokenReplaceEnabled: true
         tokenTargetPatterns:
-          - platform/*.bicepparam
+          - platform/resourcegroup.bicepparam
           - tests/design/resource_group/**/common.design.json
-          - tests/design/network_services/**/common.design.json
         actions:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
@@ -117,15 +116,19 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
+        tokenReplaceEnabled: true
+        tokenTargetPatterns:
+          - platform/networkservices.bicepparam
+          - tests/design/network_services/**/common.design.json
         actions:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/unit/resource_group -ResultsFile TestResults/bicep_tests_network_services_unit_tests.xml"
+            arguments: "-TestsPath tests/unit/network_services -ResultsFile TestResults/bicep_tests_network_services_unit_tests.xml"
           - name: integration_tests
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/integration/resource_group -ResultsFile TestResults/bicep_tests_network_services_integration_tests.xml"
+            arguments: "-TestsPath tests/integration/network_services -ResultsFile TestResults/bicep_tests_network_services_integration_tests.xml"
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1

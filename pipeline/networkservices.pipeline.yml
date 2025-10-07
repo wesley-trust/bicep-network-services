@@ -133,10 +133,14 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
-        delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
         ${{ if not(parameters.doNotRunBicepActions) }}:
           dependsOn:
             - bicep_actions
+        delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
+        tokenReplaceEnabled: true
+        tokenTargetPatterns:
+          - platform/resourcegroup.bicepparam
+          - tests/design/resource_group/**/common.design.json
         actions:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
@@ -151,10 +155,14 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
-        delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
         ${{ if not(parameters.doNotRunBicepActions) }}:
           dependsOn:
             - bicep_actions
+        delayMinutes: ${{ parameters.bicepTestsDelayMinutes }}
+        tokenReplaceEnabled: true
+        tokenTargetPatterns:
+          - platform/networkservices.bicepparam
+          - tests/design/network_services/**/common.design.json
         actions:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
