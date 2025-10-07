@@ -1,0 +1,16 @@
+[
+  {
+    "resourceType": "Microsoft.Network/routeTables",
+    "tags": {
+      "environment": "#{{ environment }}",
+      "owner": "platform-team",
+      "service": "network"
+    },
+    "resources": [
+      {
+        "name": "rt-snet-network-#{{ environment }}-#{{ regionCode }}-vnet-001-cae-001",
+        "location": "#{{ region }}"
+      }
+    ]
+  }
+]
