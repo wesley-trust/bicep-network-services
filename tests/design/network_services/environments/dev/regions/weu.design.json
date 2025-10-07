@@ -9,7 +9,11 @@
     "resources": [
       {
         "name": "rt-snet-network-dev-weu-vnet-001-cae-001",
-        "location": "westeurope"
+        "location": "westeurope",
+        "routeNames": [
+          "SharedServices-PROD-vnet",
+          "home"
+        ]
       }
     ]
   },
@@ -23,7 +27,11 @@
     "resources": [
       {
         "name": "nsg-snet-network-dev-weu-vnet-001-cae-001",
-        "location": "westeurope"
+        "location": "westeurope",
+        "securityRuleNames": [
+          "allow-home-inbound",
+          "allow-SharedServices-PROD-vnet-inbound"
+        ]
       }
     ]
   },
@@ -37,7 +45,42 @@
     "resources": [
       {
         "name": "vnet-network-dev-weu-001",
-        "location": "westeurope"
+        "location": "westeurope",
+        "addressPrefixes": [
+          "10.10.0.0/22"
+        ],
+        "dnsServers": [
+          "10.0.2.10",
+          "10.0.2.11"
+        ],
+        "subnetNames": [
+          "snet-network-dev-weu-vnet-001-cae-001"
+        ],
+        "virtualNetworkPeerings": [
+          "peer-vnet-network-dev-weu-001-EdgeServices-PROD-vnet"
+        ]
+      }
+    ]
+  },
+  {
+    "resourceType": "Microsoft.Network/virtualNetworks/subnets",
+    "tags": {},
+    "resources": [
+      {
+        "name": "snet-network-dev-weu-vnet-001-cae-001",
+        "addressPrefix": "10.10.0.0/24",
+        "delegationName": "Microsoft.App/environments",
+        "networkSecurityGroupId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-weu-001/providers/Microsoft.Network/networkSecurityGroups/nsg-snet-network-dev-weu-vnet-001-cae-001",
+        "routeTableId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-weu-001/providers/Microsoft.Network/routeTables/rt-snet-network-dev-weu-vnet-001-cae-001"
+      }
+    ]
+  },
+  {
+    "resourceType": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+    "tags": {},
+    "resources": [
+      {
+        "name": "peer-EdgeServices-PROD-vnet-vnet-network-dev-weu-001"
       }
     ]
   }

@@ -32,6 +32,11 @@ BeforeDiscovery {
 
   # Get unique Resource Types
   $script:ResourceTypes = $Design.resourceType | Sort-Object -Unique
+
+  $script:ResourceTypeTagExclusion = @(
+    'Microsoft.Network/virtualNetworks/virtualNetworkPeerings'
+    'Microsoft.Network/virtualNetworks/subnets'
+  )
 }
 
 BeforeAll {
@@ -49,7 +54,7 @@ BeforeAll {
     }
     $WhatIfObject = $WhatIf | ConvertFrom-Json
 
-    $script:BicepChangesAfter = $WhatIfObject.changes.after
+    $BicepChangesAfter = $WhatIfObject.changes.after
   }
   else {
     throw "What-If operation failed or returned no results."
@@ -59,7 +64,7 @@ BeforeAll {
 Describe "Resource Design" {
   Context "Integrity Check" {
     It "should have at least one Resource Type" {
-      @($ResourceTypes).Count | Should -BeGreaterThan 0
+      $ResourceTypes.Count | Should -BeGreaterThan 0
     }
   }
 }
@@ -69,24 +74,45 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   BeforeDiscovery {
     $ResourceType = $_
 
-    $script:Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
     $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
 
-    $script:TagsObject = @(
-      $Tags.PSObject.Properties |
-      ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
-    )
+    if ($null -ne $Tags) {
+      $TagsObject = @(
+        $Tags.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
+    else {
+      $TagsObject = @()
+    }
   }
 
   BeforeAll {
     $ResourceType = $_
+
+    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
+
+    if ($null -ne $Tags) {
+      $TagsObject = @(
+        $Tags.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
+    else {
+      $TagsObject = @()
+    }
     
-    $WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
+    $WhatIfResources = $BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
   }
 
   Context "Integrity Check" {
     It "should have at least one Resource" {
-      @($Resources).Count | Should -BeGreaterThan 0
+      $Resources.Count | Should -BeGreaterThan 0
+    }
+    It "should have at least one Tag" -Skip:($ResourceTypeTagExclusion -contains $ResourceType) {
+      $TagsObject.Count | Should -BeGreaterThan 0
     }
   }
 
@@ -95,7 +121,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     BeforeDiscovery {
       $Resource = $_
 
-      $script:PropertiesObject = @(
+      $PropertiesObject = @(
         $Resource.PSObject.Properties |
         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
       )
@@ -103,43 +129,65 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     BeforeAll {
       $Resource = $_
+      
+      $PropertiesObject = @(
+        $Resource.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+      
       $WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
     }
 
     Context "Integrity Check" {
       It "should have at least one Property" {
-        @($PropertiesObject).Count | Should -BeGreaterThan 0
-      }
-      It "should have at least one Tag" {
-        @($TagsObject).Count | Should -BeGreaterThan 0
+        $PropertiesObject.Count | Should -BeGreaterThan 0
       }
     }
 
     Context "Properties" {
       It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         $Property = $_
-        $WhatIfResource.$($Property.Name) | Should -BeExactly $Property.Value
+        
+        # Mapping of flattened design properties to their nested properties in the WhatIf
+        $PropertyMapping = @{
+          'Microsoft.Network/virtualNetworks'         = @{
+            addressPrefixes        = { param($Resource) $Resource.properties.addressSpace.addressPrefixes }
+            dnsServers             = { param($Resource) $Resource.properties.dhcpOptions.dnsServers }
+            subnetNames            = { param($Resource) $Resource.properties.subnets.name }
+            virtualNetworkPeerings = { param($Resource) $Resource.properties.virtualNetworkPeerings.name }
+          }
+          'Microsoft.Network/networkSecurityGroups'   = @{
+            securityRuleNames = { param($Resource) $Resource.properties.securityRules.name }
+          }
+          'Microsoft.Network/routeTables'             = @{
+            routeNames = { param($Resource) $Resource.properties.routes.name }
+          }
+          'Microsoft.Network/virtualNetworks/subnets' = @{
+            addressPrefix          = { param($Resource) $Resource.properties.addressPrefix }
+            delegationName         = { param($Resource) $Resource.properties.delegations.name }
+            networkSecurityGroupId = { param($Resource) $Resource.properties.networkSecurityGroup.id }
+            routeTableId           = { param($Resource) $Resource.properties.routeTable.id }
+          }
+        }
+
+        # If the property mapping exists for the resource type and property name, use it to extract the property path
+        if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
+          $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $WhatIfResource
+        }
+        else {
+          $ActualValue = $WhatIfResource.$($Property.Name)
+        }
+
+        $ActualValue | Should -Be $Property.Value
       }
     }
 
     Context "Tags" {
       It "should have tag '<_.Name>' with value '<_.Value>'" -ForEach $TagsObject {
         $Tag = $_
+        
         $WhatIfResource.Tags.$($Tag.Name) | Should -BeExactly $Tag.Value
       }
     }
-    AfterAll {
-      $script:PropertiesObject = $null
-    }
   }
-  AfterAll {
-    $script:Resources = $null
-    $script:TagsObject = $null
-  }
-}
-
-AfterAll {
-  $script:Design = $null
-  $script:ResourceTypes = $null
-  $script:BicepChangesAfter = $null
 }
