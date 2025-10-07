@@ -38,6 +38,7 @@ try {
   $configuration = New-PesterConfiguration
   $configuration.Run.Container = @(New-PesterContainer @containerArgs)
   $configuration.Run.Exit = $true
+  $configuration.Output = "Detailed"
   $configuration.TestResult.Enabled = $true
   $configuration.TestResult.OutputFormat = $ResultsFormat
   $configuration.TestResult.OutputPath = $ResultsFile
