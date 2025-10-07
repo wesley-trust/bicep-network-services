@@ -21,8 +21,6 @@ BeforeAll {
   # Generate Bicep What-If
   $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print
 
-  #$WhatIf = Get-Content -Path "./tests/design/resource_group/bicep.whatif.json" -Raw
-
   # Create WhatIfObject if WhatIf is not null or empty, and optionally publish artifact
   if ($WhatIf) {
     if ($ENV:PUBLISHTESTARTIFACTS) {
@@ -62,7 +60,6 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   BeforeAll {
     $ResourceType = $_
     
-    #$script:WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
     $WhatIfResources = $script:BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
   }
 
@@ -85,7 +82,6 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     BeforeAll {
       $Resource = $_
-      #$script:WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
       $WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
     }
 
@@ -113,13 +109,11 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     }
     AfterAll {
       $script:PropertiesObject = $null
-      $script:WhatIfResource = $null
     }
   }
   AfterAll {
     $script:Resources = $null
     $script:TagsObject = $null
-    $script:WhatIfResources = $null
   }
 }
 
