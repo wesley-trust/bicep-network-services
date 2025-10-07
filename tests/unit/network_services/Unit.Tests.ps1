@@ -34,8 +34,12 @@ BeforeDiscovery {
 }
 
 BeforeAll {
+  
+  # Deploy Resource Group
+  #$ResourceGroupDeploy = az deployment sub create --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors
+  
   # Generate Bicep What-If
-  $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print
+  $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceTemplateFile --parameters $ResourceParameterFile --only-show-errors --no-pretty-print
 
   # Create WhatIfObject if WhatIf is not null or empty, and optionally publish artifact
   if ($WhatIf) {

@@ -92,8 +92,9 @@ extends:
         kind: pester
         tokenReplaceEnabled: true
         tokenTargetPatterns:
-          - platform/resourcegroup.bicepparam
+          - platform/*.bicepparam
           - tests/design/resource_group/**/common.design.json
+          - tests/design/network_services/**/common.design.json
         actions:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
