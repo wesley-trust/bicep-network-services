@@ -52,8 +52,7 @@ BeforeAll {
 Describe "Resource Design" {
   Context "Integrity Check" {
     It "should have at least one Resource Type" {
-      write-host $ResourceTypes
-      $ResourceTypes.Count | Should -BeGreaterThan 0
+      @($ResourceTypes).Count | Should -BeGreaterThan 0
     }
   }
 }
@@ -98,7 +97,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
   Context "Integrity Check" {
     It "should have at least one Resource" {
-      $Resources.Count | Should -BeGreaterThan 0
+      @($Resources).Count | Should -BeGreaterThan 0
     }
     It "should have at least one Tag" {
       $TagsObject.Count | Should -BeGreaterThan 0
