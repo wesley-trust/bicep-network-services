@@ -12,5 +12,33 @@
         "location": "westeurope"
       }
     ]
+  },
+  {
+    "resourceType": "Microsoft.Network/networkSecurityGroups",
+    "tags": {
+      "environment": "dev",
+      "owner": "platform-team",
+      "service": "network"
+    },
+    "resources": [
+      {
+        "name": "nsg-snet-network-dev-weu-vnet-001-cae-001",
+        "location": "westeurope"
+      }
+    ]
+  },
+  {
+    "resourceType": "Microsoft.Network/virtualNetworks",
+    "tags": {
+      "environment": "dev",
+      "owner": "platform-team",
+      "service": "network"
+    },
+    "resources": [
+      {
+        "name": "vnet-network-dev-weu-001",
+        "location": "westeurope"
+      }
+    ]
   }
 ]

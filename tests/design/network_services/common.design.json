@@ -12,5 +12,33 @@
         "location": "#{{ region }}"
       }
     ]
+  },
+  {
+    "resourceType": "Microsoft.Network/networkSecurityGroups",
+    "tags": {
+      "environment": "#{{ environment }}",
+      "owner": "platform-team",
+      "service": "network"
+    },
+    "resources": [
+      {
+        "name": "nsg-snet-network-#{{ environment }}-#{{ regionCode }}-vnet-001-cae-001",
+        "location": "#{{ region }}"
+      }
+    ]
+  },
+  {
+    "resourceType": "Microsoft.Network/virtualNetworks",
+    "tags": {
+      "environment": "#{{ environment }}",
+      "owner": "platform-team",
+      "service": "network"
+    },
+    "resources": [
+      {
+        "name": "vnet-network-#{{ environment }}-#{{ regionCode }}-001",
+        "location": "#{{ region }}"
+      }
+    ]
   }
 ]
