@@ -2,13 +2,13 @@
   {
     "resourceType": "Microsoft.Resources/resourceGroups",
     "tags": {
-      "environment": "#{{ environment }}",
+      "environment": "dev",
       "owner": "platform-team",
       "service": "network"
     },
     "resources": [
       {
-        "name": "rg-network-#{{ environment }}-#{{ regionCode }}-001",
+        "name": "rg-network-dev-#{{ regionCode }}-001",
         "location": "#{{ region }}"
       }
     ]

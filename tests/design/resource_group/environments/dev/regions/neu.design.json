@@ -1,0 +1,16 @@
+[
+  {
+    "resourceType": "Microsoft.Resources/resourceGroups",
+    "tags": {
+      "environment": "dev",
+      "owner": "platform-team",
+      "service": "network"
+    },
+    "resources": [
+      {
+        "name": "rg-network-dev-neu-001",
+        "location": "northeurope"
+      }
+    ]
+  }
+]

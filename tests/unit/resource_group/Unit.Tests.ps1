@@ -1,7 +1,10 @@
 [CmdletBinding()]
 Param(
-  [string]$DesignPath = "./tests/design/resource_group/resourcegroup.tests.json",
-  [string]$Location,
+  [string]$DesignRoot = "./tests/design/resource_group",
+  [string]$Location = $ENV:REGION,
+  [string]$RegionCode = $ENV:REGIONCODE,
+  [string]$Environment = $ENV:ENVIRONMENT,
+  [ValidateSet("Full", "Environment")][string]$Common,
   [string]$ResourceGroupTemplateFile = "./platform/resourcegroup.bicep",
   [string]$ResourceGroupParameterFile = "./platform/resourcegroup.bicepparam"
 )
@@ -9,6 +12,17 @@ Param(
 BeforeDiscovery {
   $ErrorActionPreference = 'Stop'
   Set-StrictMode -Version Latest
+
+  # Determine Design Path
+  if ($Common -eq "Full") {
+    $DesignPath = "$DesignRoot/common.design.json"
+  }
+  elseif ($Common -eq "Environment") {
+    $DesignPath = "$DesignRoot/environments/$Environment/common.design.json"
+  }
+  else {
+    $DesignPath = "$DesignRoot/environments/$Environment/regions/$RegionCode.design.json"
+  }
 
   # Import Design
   $script:Design = Get-Content -Path $DesignPath -Raw | ConvertFrom-Json

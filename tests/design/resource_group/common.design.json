@@ -1,0 +1,16 @@
+[
+  {
+    "resourceType": "Microsoft.Resources/resourceGroups",
+    "tags": {
+      "environment": "#{{ environment }}",
+      "owner": "platform-team",
+      "service": "network"
+    },
+    "resources": [
+      {
+        "name": "rg-network-#{{ environment }}-#{{ regionCode }}-#{{ deploymentVersion }}",
+        "location": "#{{ region }}"
+      }
+    ]
+  }
+]
