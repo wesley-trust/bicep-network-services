@@ -281,7 +281,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
   }
 }
 
-BeforeAll {
+AfterAll {
   
   If ($ENV:CLEANUPSTACKAFTERTEST) {
     
