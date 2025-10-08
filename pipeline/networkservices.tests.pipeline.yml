@@ -118,7 +118,7 @@ extends:
         kind: pester
         tokenReplaceEnabled: true
         tokenTargetPatterns:
-          - platform/networkservices.bicepparam
+          - platform/*.bicepparam
           - tests/design/network_services/**/common.design.json
         actions:
           - name: unit_tests
