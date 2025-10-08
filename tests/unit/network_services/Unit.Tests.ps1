@@ -280,3 +280,22 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
     }
   }
 }
+
+BeforeAll {
+  
+  If ($ENV:CLEANUPSTACKAFTERTEST) {
+    
+    $StackName = "ds-sub-$ResourceGroupName"
+
+    $StackParameters = @(
+      'stack', 'sub', 'delete',
+      '--name', $StackName,
+      '--yes',
+      '--action-on-unmanage', 'deleteAll',
+      '--only-show-errors'
+    )
+    
+    # Delete Stack
+    az @StackParameters
+  }
+}
