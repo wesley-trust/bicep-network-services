@@ -285,7 +285,12 @@ AfterAll {
   
   If ($ENV:CLEANUPSTACKAFTERTEST) {
     
+    Write-Information -InformationAction Continue -MessageData "Cleanup Stack after tests is enabled"
+    
     $StackName = "ds-sub-$ResourceGroupName"
+  
+    Write-Information -InformationAction Continue -MessageData "Deployment Stack '$StackName' will be deleted"
+    Write-Information -InformationAction Continue -MessageData "Resource Group '$ResourceGroupName' will be deleted"
 
     $StackParameters = @(
       'stack', 'sub', 'delete',

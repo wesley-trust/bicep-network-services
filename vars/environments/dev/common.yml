@@ -3,6 +3,6 @@ variables:
   environment: dev
   publishTestArtifacts: true
 
-  # Append suffix to deploymentVersion, allowing multiple deployments, with optional cleanup
-  enableDynamicDeploymentSuffix: true
+  # Append suffix to deploymentVersion for Tests, to allow multiple runs, with optional cleanup
+  enableTestsDeploymentSuffix: true
   cleanUpStackAfterTest: true
