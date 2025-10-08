@@ -2,3 +2,6 @@
 variables:
   environment: dev
   publishTestArtifacts: true
+
+  # For test pipelines, append a unique suffix to the deploymentVersion to allow multiple deployments without conflict
+  enableDynamicDeploymentSuffix: true
