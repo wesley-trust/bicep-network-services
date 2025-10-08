@@ -66,8 +66,114 @@ BeforeDiscovery {
 
 BeforeAll {
 
-  # Deploy Resource Group
-  #$ResourceGroupDeploy = az deployment sub create --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors
+  function ConvertTo-BooleanValue {
+    [CmdletBinding()]
+    param (
+      [parameter(
+        Mandatory = $true,
+        ValueFromPipeLineByPropertyName = $true,
+        ValueFromPipeline = $true
+      )]
+      [string]$Value
+    )
+
+    process {
+      if ($null -eq $Value) {
+        return $false
+      }
+
+      switch ($Value) {
+        { $_ -is [bool] } { return $_ }
+        { $_ -is [int] } { return [bool]$_ }
+        { $_ -is [string] } {
+          $normalized = $_.Trim()
+          if ($normalized -match '^(?i:true|1)$') { return $true }
+          if ($normalized -match '^(?i:false|0)$') { return $false }
+          break
+        }
+      }
+
+      throw 'Must be a boolean-compatible value (true/false, 1/0).'
+    }
+  }
+
+  function Invoke-StackDeployment {
+    param(
+      [string[]]$BaseArgs,
+      [bool]$AllowDelete
+    )
+
+    $initialAction = if ($AllowDelete) { 'deleteAll' } else { 'detachAll' }
+    $initialArgs = $BaseArgs + @('--action-on-unmanage', $initialAction)
+
+    try {
+      az @initialArgs
+    }
+    finally {
+      if ($AllowDelete) {
+        $resetArgs = $BaseArgs + @('--action-on-unmanage', 'detachAll')
+        try {
+          az @resetArgs | Out-Null
+        }
+        catch {
+          Write-Warning "Failed to restore action-on-unmanage to detachAll: $($_.Exception.Message)"
+        }
+      }
+    }
+  }
+
+  function Get-StackName {
+    param(
+      [string]$Prefix,
+      [string]$Identifier,
+      [string]$Name
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Identifier)) {
+      throw 'Identifier is required to compute the stack name.'
+    }
+    $parts = @($Prefix, $Identifier)
+
+    if (-not [string]::IsNullOrWhiteSpace($Name)) {
+      $sanitisedName = $Name.Trim()
+      if ($sanitisedName -and -not $sanitisedName.Equals($Identifier, [System.StringComparison]::OrdinalIgnoreCase)) {
+        $parts += $sanitisedName
+      }
+    }
+
+    # Build raw name; remove spaces around parts but don't alter valid characters
+    $raw = ($parts -join '-').Trim()
+
+    # Allow: letters, digits, underscore, hyphen, dot, parentheses
+    $sanitised = ($raw -replace '[^-\w\._\(\)]', '-').Trim('-')
+    if (-not $sanitised) { $sanitised = $Prefix }
+
+    if ($sanitised.Length -gt 90) {
+      $sanitised = $sanitised.Substring(0, 90).Trim('-')
+      if (-not $sanitised) { $sanitised = $Prefix }
+    }
+
+    return $sanitised
+  }
+
+  $ResourceGroupExists = az group exists --name $ResourceGroupName | ConvertTo-BooleanValue
+
+  if (!$ResourceGroupExists) {
+    
+    $StackName = Get-StackName -Prefix 'ds-sub' -Identifier $ResourceGroupName
+
+    $stackCommandBase = @(
+      'stack', 'sub', 'create',
+      '--name', $StackName,
+      '--location', $Location,
+      '--template-file', $ResourceGroupTemplateFile,
+      '--parameters', $ResourceGroupParameterFile,
+      '--deny-settings-mode', 'DenyWriteAndDelete',
+      '--only-show-errors'
+    )
+
+    Invoke-StackDeployment -BaseArgs $stackCommandBase -AllowDelete:$false
+  }
   
   # Generate Bicep What-If
   $WhatIf = az deployment group what-if --resource-group $ResourceGroupName --template-file $ResourceTemplateFile --parameters $ResourceParameterFile --only-show-errors --no-pretty-print
