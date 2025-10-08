@@ -1,0 +1,18 @@
+{
+  "resourceType": "Microsoft.Network/routeTables",
+  "tags": {
+    "environment": "dev",
+    "owner": "platform-team",
+    "service": "network"
+  },
+  "resources": [
+    {
+      "name": "rt-snet-network-dev-weu-vnet-001-cae-001",
+      "location": "westeurope",
+      "routeNames": [
+        "SharedServices-PROD-vnet",
+        "home"
+      ]
+    }
+  ]
+}

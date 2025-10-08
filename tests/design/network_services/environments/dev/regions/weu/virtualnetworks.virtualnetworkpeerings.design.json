@@ -1,0 +1,9 @@
+{
+  "resourceType": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+  "tags": {},
+  "resources": [
+    {
+      "name": "peer-EdgeServices-PROD-vnet-vnet-network-dev-weu-001"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "resourceType": "Microsoft.Network/networkSecurityGroups",
+  "tags": {
+    "environment": "dev",
+    "owner": "platform-team",
+    "service": "network"
+  },
+  "resources": [
+    {
+      "name": "nsg-snet-network-dev-neu-vnet-001-cae-001",
+      "location": "northeurope",
+      "securityRuleNames": [
+        "allow-home-inbound",
+        "allow-SharedServices-PROD-vnet-inbound"
+      ]
+    }
+  ]
+}
