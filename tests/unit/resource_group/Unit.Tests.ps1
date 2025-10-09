@@ -68,6 +68,9 @@ BeforeAll {
     $ReportObject = $Report | ConvertFrom-Json
 
     $ReportFiltered = $ReportObject.changes.after
+
+    # Test
+    Write-Host $ReportFiltered
   }
   else {
     throw "Operation failed or returned no results."

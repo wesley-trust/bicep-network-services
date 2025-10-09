@@ -93,6 +93,9 @@ BeforeAll {
         ProvisioningState = $Resource.ProvisioningState
       }
     }
+
+    # Test
+    Write-Host $ReportFiltered
   }
   else {
     throw "Operation failed or returned no results."
