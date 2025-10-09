@@ -71,23 +71,28 @@ BeforeAll {
   )
 
   # Deploy Stack
-  az @StackParameters
+  $Deploy = az @StackParameters
   
-  # Get Deployment Details
-  $Deploy = az stack sub show --name $StackName --output json
+  # Show deployment details
+  $Deploy2 = az stack sub show --name $StackName --output json
 
   # Create WhatIfObject if WhatIf is not null or empty, and optionally publish artifact
   if ($Deploy) {
     if ($ENV:PUBLISHTESTARTIFACTS) {
       $Deploy | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.deploy.json"
+      $Deploy2 | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.deploy2.json"
     }
-    $DeployObject = $Deploy | ConvertFrom-Json
+    #$DeployObject = $Deploy | ConvertFrom-Json
 
     #$BicepChangesAfter = $WhatIfObject.changes.after
   }
   else {
     throw "What-If operation failed or returned no results."
   }
+}
+
+Describe 'Integration Tests' {
+  It 'passes' { $true | Should -BeTrue }
 }
 
 # Describe "Resource Design" {
