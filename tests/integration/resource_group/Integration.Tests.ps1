@@ -82,7 +82,7 @@ BeforeAll {
     
     $ReportObject = $Report | ConvertFrom-Json
 
-    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources) {     
+    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources.id) {     
       $Resource = Get-AzResourceGroup -ResourceId $ResourceId
 
       [PSCustomObject]@{
