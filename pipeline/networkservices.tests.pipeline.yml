@@ -36,10 +36,6 @@ parameters:
     default: false
 
   # Operational flags
-  - name: allowDeleteOnUnmanage
-    displayName: "Temporarily Allow Delete on Unmanage"
-    type: boolean
-    default: false
   - name: cleanupResourceGroupStack
     displayName: "Cleanup Resource Group Stack"
     type: boolean
@@ -127,10 +123,6 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
-        tokenReplaceEnabled: true
-        tokenTargetPatterns:
-          - platform/*.bicepparam
-          - tests/design/network_services/**/*.design.json
         environments:
           - dev
         actions:
@@ -147,9 +139,6 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
-        tokenReplaceEnabled: true
-        tokenTargetPatterns:
-          - tests/design/network_services/**/*.design.json
         actions:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
