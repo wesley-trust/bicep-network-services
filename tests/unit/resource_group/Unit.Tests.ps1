@@ -57,20 +57,20 @@ BeforeDiscovery {
 
 BeforeAll {
   
-  # Generate Bicep What-If
-  $WhatIf = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print
+  # Generate Bicep Report
+  $Report = az deployment sub what-if --location $Location --template-file $ResourceGroupTemplateFile --parameters $ResourceGroupParameterFile --only-show-errors --no-pretty-print
 
-  # Create WhatIfObject if WhatIf is not null or empty, and optionally publish artifact
-  if ($WhatIf) {
+  # Create object if report is not null or empty, and optionally publish artifact
+  if ($Report) {
     if ($ENV:PUBLISHTESTARTIFACTS) {
-      $WhatIf | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.whatif.json"
+      $Report | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.report.json"
     }
-    $WhatIfObject = $WhatIf | ConvertFrom-Json
+    $ReportObject = $Report | ConvertFrom-Json
 
-    $BicepChangesAfter = $WhatIfObject.changes.after
+    $ReportFiltered = $ReportObject.changes.after
   }
   else {
-    throw "What-If operation failed or returned no results."
+    throw "Operation failed or returned no results."
   }
 }
 
@@ -126,7 +126,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
       $TagsObject = @()
     }
     
-    $WhatIfResources = $BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
+    $ReportResources = $ReportFiltered | Where-Object { $_.type -eq $ResourceType }
   }
 
   Context "Integrity Check" {
@@ -171,7 +171,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
       )
       
-      $WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
+      $ReportResource = $ReportResources | Where-Object { $_.name -eq $Resource.Name }
     }
 
     Context "Integrity Check" {
@@ -194,7 +194,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         $Property = $_
         
         # Act
-        $ActualValue = $WhatIfResource.$($Property.Name)
+        $ActualValue = $ReportResource.$($Property.Name)
 
         # Assert
         $ActualValue | Should -Be $Property.Value
@@ -209,7 +209,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         $Tag = $_
         
         # Act
-        $ActualValue = $WhatIfResource.Tags.$($Tag.Name)
+        $ActualValue = $ReportResource.Tags.$($Tag.Name)
         
         # Assert
         $ActualValue | Should -BeExactly $Tag.Value

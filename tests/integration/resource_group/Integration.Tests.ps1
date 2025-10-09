@@ -72,173 +72,176 @@ BeforeAll {
   )
 
   # Deploy Stack
-  $Deploy = az @StackParameters
+  $Report = az @StackParameters
   
-  # Show deployment details
-  $Deploy2 = az stack sub show --name $StackName --output json
-
-  # Create WhatIfObject if WhatIf is not null or empty, and optionally publish artifact
-  if ($Deploy) {
+  # Create object if report is not null or empty, and optionally publish artifact
+  if ($Report) {
     if ($ENV:PUBLISHTESTARTIFACTS) {
-      $Deploy | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.deploy.json"
-      $Deploy2 | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.deploy2.json"
+      $Report | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.report.json"
     }
-    #$DeployObject = $Deploy | ConvertFrom-Json
+    
+    $ReportObject = $Report | ConvertFrom-Json
 
-    #$BicepChangesAfter = $WhatIfObject.changes.after
+    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources) {     
+      $Resource = Get-AzResourceGroup -ResourceId $ResourceId
+
+      [PSCustomObject]@{
+        Name              = $Resource.Name
+        Type              = "Microsoft.Resources/resourceGroups"
+        Location          = $Resource.Location
+        Tags              = $Resource.Tags
+        ProvisioningState = $Resource.ProvisioningState
+      }
+    }
   }
   else {
-    throw "What-If operation failed or returned no results."
+    throw "Operation failed or returned no results."
   }
 }
 
-Describe 'Integration Tests' {
-  It 'passes' { $true | Should -BeTrue }
+Describe "Resource Design" {
+
+  Context "Integrity Check" {
+
+    It "should have at least one Resource Type" {
+      
+      # Act
+      $ActualValue = @($ResourceTypes).Count
+      
+      # Assert
+      $ActualValue | Should -BeGreaterThan 0
+    }
+  }
 }
 
-# Describe "Resource Design" {
+Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
-#   Context "Integrity Check" {
+  BeforeDiscovery {
 
-#     It "should have at least one Resource Type" {
-      
-#       # Act
-#       $ActualValue = @($ResourceTypes).Count
-      
-#       # Assert
-#       $ActualValue | Should -BeGreaterThan 0
-#     }
-#   }
-# }
+    $ResourceType = $_
 
-# Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
+    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
 
-#   BeforeDiscovery {
+    if ($null -ne $Tags) {
+      $TagsObject = @(
+        $Tags.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
+    else {
+      $TagsObject = @()
+    }
+  }
 
-#     $ResourceType = $_
-
-#     $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
-#     $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
-
-#     if ($null -ne $Tags) {
-#       $TagsObject = @(
-#         $Tags.PSObject.Properties |
-#         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
-#       )
-#     }
-#     else {
-#       $TagsObject = @()
-#     }
-#   }
-
-#   BeforeAll {
+  BeforeAll {
     
-#     $ResourceType = $_
+    $ResourceType = $_
 
-#     $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
-#     $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
+    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
 
-#     if ($null -ne $Tags) {
-#       $TagsObject = @(
-#         $Tags.PSObject.Properties |
-#         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
-#       )
-#     }
-#     else {
-#       $TagsObject = @()
-#     }
+    if ($null -ne $Tags) {
+      $TagsObject = @(
+        $Tags.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
+    else {
+      $TagsObject = @()
+    }
     
-#     $WhatIfResources = $BicepChangesAfter | Where-Object { $_.type -eq $ResourceType }
-#   }
+    $ReportResources = $ReportFiltered | Where-Object { $_.type -eq $ResourceType }
+  }
 
-#   Context "Integrity Check" {
+  Context "Integrity Check" {
     
-#     It "should have at least one Resource" {
+    It "should have at least one Resource" {
 
-#       # Act
-#       $ActualValue = @($Resources).Count
+      # Act
+      $ActualValue = @($Resources).Count
 
-#       # Assert
-#       $ActualValue | Should -BeGreaterThan 0
-#     }
+      # Assert
+      $ActualValue | Should -BeGreaterThan 0
+    }
     
-#     It "should have at least one Tag" {
+    It "should have at least one Tag" {
 
-#       # Act
-#       $ActualValue = $TagsObject.Count
+      # Act
+      $ActualValue = $TagsObject.Count
 
-#       # Assert
-#       $ActualValue | Should -BeGreaterThan 0
-#     }
-#   }
+      # Assert
+      $ActualValue | Should -BeGreaterThan 0
+    }
+  }
 
-#   Context "Resource Name '<_.name>'" -ForEach $Resources {
+  Context "Resource Name '<_.name>'" -ForEach $Resources {
 
-#     BeforeDiscovery {
+    BeforeDiscovery {
       
-#       $Resource = $_
+      $Resource = $_
 
-#       $PropertiesObject = @(
-#         $Resource.PSObject.Properties |
-#         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
-#       )
-#     }
+      $PropertiesObject = @(
+        $Resource.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
 
-#     BeforeAll {
+    BeforeAll {
       
-#       $Resource = $_
+      $Resource = $_
       
-#       $PropertiesObject = @(
-#         $Resource.PSObject.Properties |
-#         ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
-#       )
+      $PropertiesObject = @(
+        $Resource.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
       
-#       $WhatIfResource = $WhatIfResources | Where-Object { $_.name -eq $Resource.Name }
-#     }
+      $ReportResource = $ReportResources | Where-Object { $_.name -eq $Resource.Name }
+    }
 
-#     Context "Integrity Check" {
+    Context "Integrity Check" {
       
-#       It "should have at least one Property" {
+      It "should have at least one Property" {
         
-#         # Act
-#         $ActualValue = $PropertiesObject.Count
+        # Act
+        $ActualValue = $PropertiesObject.Count
 
-#         # Assert
-#         $ActualValue | Should -BeGreaterThan 0
-#       }
-#     }
+        # Assert
+        $ActualValue | Should -BeGreaterThan 0
+      }
+    }
 
-#     Context "Properties" {
+    Context "Properties" {
       
-#       It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
+      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         
-#         # Arrange
-#         $Property = $_
+        # Arrange
+        $Property = $_
         
-#         # Act
-#         $ActualValue = $WhatIfResource.$($Property.Name)
+        # Act
+        $ActualValue = $ReportResource.$($Property.Name)
 
-#         # Assert
-#         $ActualValue | Should -Be $Property.Value
-#       }
-#     }
+        # Assert
+        $ActualValue | Should -Be $Property.Value
+      }
+    }
 
-#     Context "Tags" {
+    Context "Tags" {
       
-#       It "should have tag '<_.Name>' with value '<_.Value>'" -ForEach $TagsObject {
+      It "should have tag '<_.Name>' with value '<_.Value>'" -ForEach $TagsObject {
         
-#         # Arrange
-#         $Tag = $_
+        # Arrange
+        $Tag = $_
         
-#         # Act
-#         $ActualValue = $WhatIfResource.Tags.$($Tag.Name)
+        # Act
+        $ActualValue = $ReportResource.Tags.$($Tag.Name)
         
-#         # Assert
-#         $ActualValue | Should -BeExactly $Tag.Value
-#       }
-#     }
-#   }
-# }
+        # Assert
+        $ActualValue | Should -BeExactly $Tag.Value
+      }
+    }
+  }
+}
 
 AfterAll {
   
