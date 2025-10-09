@@ -96,11 +96,11 @@ extends:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/unit/resource_group -ResultsFile TestResults/bicep_tests_resource_group_unit_tests.xml"
+            arguments: "-TestsPath tests/unit/resource_group -ResultsFile TestResults/bicep_tests_resource_group_ci_unit_tests.xml"
           - name: integration_tests
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/integration/resource_group -ResultsFile TestResults/bicep_tests_resource_group_integration_tests.xml"
+            arguments: "-TestsPath tests/integration/resource_group -ResultsFile TestResults/bicep_tests_resource_group_ci_integration_tests.xml"
       - name: bicep_tests_resource_group
         enabled: ${{ and( or(not(parameters.doNotRunRegression), not(parameters.doNotRunSmoke)), not(parameters.doNotRunBicepTestsResourceGroup) ) }}
         type: powershell
@@ -130,11 +130,11 @@ extends:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/unit/network_services -ResultsFile TestResults/bicep_tests_network_services_unit_tests.xml"
+            arguments: "-TestsPath tests/unit/network_services -ResultsFile TestResults/bicep_tests_network_services_ci_unit_tests.xml"
           - name: integration_tests
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-TestsPath tests/integration/network_services -ResultsFile TestResults/bicep_tests_network_services_integration_tests.xml"
+            arguments: "-TestsPath tests/integration/network_services -ResultsFile TestResults/bicep_tests_network_services_ci_integration_tests.xml"
       - name: bicep_tests_network_services
         enabled: ${{ and( or(not(parameters.doNotRunRegression), not(parameters.doNotRunSmoke)), not(parameters.doNotRunBicepTestsNetworkServices) ) }}
         type: powershell
