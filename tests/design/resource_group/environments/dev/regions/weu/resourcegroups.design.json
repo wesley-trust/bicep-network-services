@@ -7,7 +7,7 @@
   },
   "resources": [
     {
-      "name": "rg-network-dev-weu-001",
+      "name": "rg-network-dev-weu-#{{ deploymentVersion }}",
       "location": "westeurope"
     }
   ]
