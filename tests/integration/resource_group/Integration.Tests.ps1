@@ -95,7 +95,7 @@ BeforeAll {
     }
 
     # Test
-    Write-Host $ReportFiltered
+    Write-Information -InformationAction Continue -MessageData $ReportFiltered
   }
   else {
     throw "Operation failed or returned no results."
