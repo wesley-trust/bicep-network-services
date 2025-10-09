@@ -35,12 +35,6 @@ parameters:
     type: boolean
     default: false
 
-  # Operational flags
-  - name: cleanupResourceGroupStack
-    displayName: "Cleanup Resource Group Stack"
-    type: boolean
-    default: false
-
   # Environment skips
   - name: skip_dev
     displayName: "Skip Environments: Development"

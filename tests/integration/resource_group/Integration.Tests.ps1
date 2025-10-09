@@ -67,7 +67,7 @@ BeforeAll {
     '--parameters', $ResourceGroupParameterFile,
     '--deny-settings-mode', 'DenyWriteAndDelete',
     '--action-on-unmanage', 'detachAll',
-    '--only-show-errors'
+    '--only-show-errors', '--output json'
   )
 
   # Deploy Stack
