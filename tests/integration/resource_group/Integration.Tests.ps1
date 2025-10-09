@@ -86,7 +86,7 @@ BeforeAll {
       $Resource = Get-AzResourceGroup -ResourceId $ResourceId
 
       [PSCustomObject]@{
-        Name              = $Resource.Name
+        Name              = $Resource.ResourceGroupName
         Type              = "Microsoft.Resources/resourceGroups"
         Location          = $Resource.Location
         Tags              = $Resource.Tags
