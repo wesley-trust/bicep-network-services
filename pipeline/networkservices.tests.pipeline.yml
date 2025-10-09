@@ -86,7 +86,7 @@ extends:
     pipelineType: auto
     actionGroups:
       - name: bicep_tests_resource_group_ci
-        enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
+        enabled: ${{ and( or(not(parameters.doNotRunUnit), not(parameters.doNotRunIntegration)), not(parameters.doNotRunBicepTestsResourceGroup) ) }}
         type: powershell
         scriptTask: azureCli
         kind: pester
@@ -106,7 +106,7 @@ extends:
             scriptPath: scripts/pester_run.ps1
             arguments: "-TestsPath tests/integration/resource_group -ResultsFile TestResults/bicep_tests_resource_group_integration_tests.xml"
       - name: bicep_tests_resource_group
-        enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
+        enabled: ${{ and( or(not(parameters.doNotRunRegression), not(parameters.doNotRunSmoke)), not(parameters.doNotRunBicepTestsResourceGroup) ) }}
         type: powershell
         scriptTask: azureCli
         kind: pester
@@ -123,7 +123,7 @@ extends:
             scriptPath: scripts/pester_run.ps1
             arguments: "-TestsPath tests/smoke/resource_group -ResultsFile TestResults/bicep_tests_resource_group_smoke_tests.xml"
       - name: bicep_tests_network_services_ci
-        enabled: ${{ not(parameters.doNotRunBicepTestsNetworkServices) }}
+        enabled: ${{ and( or(not(parameters.doNotRunUnit), not(parameters.doNotRunIntegration)), not(parameters.doNotRunBicepTestsNetworkServices) ) }}
         type: powershell
         scriptTask: azureCli
         kind: pester
@@ -143,7 +143,7 @@ extends:
             scriptPath: scripts/pester_run.ps1
             arguments: "-TestsPath tests/integration/network_services -ResultsFile TestResults/bicep_tests_network_services_integration_tests.xml"
       - name: bicep_tests_network_services
-        enabled: ${{ not(parameters.doNotRunBicepTestsNetworkServices) }}
+        enabled: ${{ and( or(not(parameters.doNotRunRegression), not(parameters.doNotRunSmoke)), not(parameters.doNotRunBicepTestsNetworkServices) ) }}
         type: powershell
         scriptTask: azureCli
         kind: pester
