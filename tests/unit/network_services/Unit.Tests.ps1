@@ -283,7 +283,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
 AfterAll {
   
-  If ($ENV:CLEANUPSTACKAFTERTEST) {
+  If ($ENV:TESTSCLEANUPSTACKAFTERTEST) {
     
     Write-Information -InformationAction Continue -MessageData "Cleanup Stack after tests is enabled"
     
