@@ -86,16 +86,12 @@ BeforeAll {
       $Resource = Get-AzResourceGroup -ResourceId $ResourceId
 
       [PSCustomObject]@{
-        Name              = $Resource.ResourceGroupName
-        Type              = "Microsoft.Resources/resourceGroups"
-        Location          = $Resource.Location
-        Tags              = $Resource.Tags
-        ProvisioningState = $Resource.ProvisioningState
+        Name     = $Resource.ResourceGroupName
+        Type     = "Microsoft.Resources/resourceGroups"
+        Location = $Resource.Location
+        Tags     = $Resource.Tags
       }
     }
-
-    # Test
-    Write-Information -InformationAction Continue -MessageData $ReportFiltered
   }
   else {
     throw "Operation failed or returned no results."
