@@ -6,7 +6,8 @@ Param(
   [string]$Environment = $ENV:ENVIRONMENT,
   [ValidateSet("Full", "Environment", "Region")][string]$DesignPathSwitch = "Region",
   [string]$ResourceGroupTemplateFile = "./platform/resourcegroup.bicep",
-  [string]$ResourceGroupParameterFile = "./platform/resourcegroup.bicepparam"
+  [string]$ResourceGroupParameterFile = "./platform/resourcegroup.bicepparam",
+  [string]$ResourceGroupName = $ENV:RESOURCEGROUP
 )
 
 BeforeDiscovery {
