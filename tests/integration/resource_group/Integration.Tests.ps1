@@ -58,11 +58,11 @@ BeforeDiscovery {
 
 BeforeAll {
 
-  $StackName = "ds-sub-$ResourceGroupName"
+  $StackSubName = "ds-sub-$ResourceGroupName"
 
-  $StackParameters = @(
+  $StackSubParameters = @(
     'stack', 'sub', 'create',
-    '--name', $StackName,
+    '--name', $StackSubName,
     '--location', $Location,
     '--template-file', $ResourceGroupTemplateFile,
     '--parameters', $ResourceGroupParameterFile,
@@ -72,7 +72,7 @@ BeforeAll {
   )
 
   # Deploy Stack
-  $Report = az @StackParameters
+  $Report = az @StackSubParameters
   
   # Create object if report is not null or empty, and optionally publish artifact
   if ($Report) {
@@ -247,22 +247,22 @@ AfterAll {
   If ($ENV:TESTSCLEANUPSTACKAFTERTEST) {
     
     Write-Information -InformationAction Continue -MessageData "Cleanup Stack after tests is enabled"
-    
-    $StackName = "ds-sub-$ResourceGroupName"
-  
-    Write-Information -InformationAction Continue -MessageData "Deployment Stack '$StackName' will be deleted"
+
+    $StackSubName = "ds-sub-$ResourceGroupName"
+
+    Write-Information -InformationAction Continue -MessageData "Deployment Stack '$StackSubName' will be deleted"
     Write-Information -InformationAction Continue -MessageData "Resource Group '$ResourceGroupName' will be deleted"
 
-    $StackParameters = @(
+    $StackSubParameters = @(
       'stack', 'sub', 'delete',
-      '--name', $StackName,
+      '--name', $StackSubName,
       '--yes',
       '--action-on-unmanage', 'deleteAll',
       '--only-show-errors'
     )
     
     # Delete Stack
-    az @StackParameters
+    az @StackSubParameters
   }
   else {
     Write-Information -InformationAction Continue -MessageData "Cleanup Stack after tests is disabled, the Stack will need to be cleaned up manually."

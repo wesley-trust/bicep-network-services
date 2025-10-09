@@ -66,18 +66,30 @@ BeforeDiscovery {
 
 BeforeAll {
 
-  $ResourceGroupExists = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+  $StackSubName = "ds-sub-$ResourceGroupName"
 
-  if (!$ResourceGroupExists) {
+  $StackSubParameters = @(
+    'stack', 'sub', 'create',
+    '--name', $StackSubName,
+    '--location', $Location,
+    '--template-file', $ResourceGroupTemplateFile,
+    '--parameters', $ResourceGroupParameterFile,
+    '--deny-settings-mode', 'DenyWriteAndDelete',
+    '--action-on-unmanage', 'detachAll',
+    '--only-show-errors'
+  )
 
-    Write-Information -InformationAction Continue -MessageData "Resource Group '$ResourceGroupName' does not exist. Creating."
+  # Deploy Stack
+  $ResourceGroupReport = az @StackSubParameters
 
-    $StackName = "ds-sub-$ResourceGroupName"
+  # Resource Group Stack
+  $StackGroupName = "ds-$ResourceGroupName"
 
-    $StackParameters = @(
-      'stack', 'sub', 'create',
-      '--name', $StackName,
-      '--location', $Location,
+  if ($ResourceGroupReport) {
+    $StackGroupParameters = @(
+      'stack', 'group', 'create',
+      '--name', $StackGroupName,
+      '--resource-group', $ResourceGroupName,
       '--template-file', $ResourceGroupTemplateFile,
       '--parameters', $ResourceGroupParameterFile,
       '--deny-settings-mode', 'DenyWriteAndDelete',
@@ -86,14 +98,11 @@ BeforeAll {
     )
 
     # Deploy Stack
-    az @StackParameters
+    $Report = az @StackGroupParameters
   }
   else {
-    Write-Information -InformationAction Continue -MessageData "Resource Group '$ResourceGroupName' already exists. Skipping creation."
+    throw "Resource Group Stack deployment failed or returned no results."
   }
-  
-  # Generate Bicep Report
-  $Report = az deployment group what-if --resource-group $ResourceGroupName --template-file $ResourceTemplateFile --parameters $ResourceParameterFile --only-show-errors --no-pretty-print
 
   # Create object if report is not null or empty, and optionally publish artifact
   if ($Report) {
@@ -102,7 +111,9 @@ BeforeAll {
     }
     $ReportObject = $Report | ConvertFrom-Json
 
-    $ReportFiltered = $ReportObject.changes.after
+    Write-Host $ReportFiltered
+    
+    #$ReportFiltered = $ReportObject.changes.after
   }
   else {
     throw "Operation failed or returned no results."
@@ -287,21 +298,21 @@ AfterAll {
     
     Write-Information -InformationAction Continue -MessageData "Cleanup Stack after tests is enabled"
     
-    $StackName = "ds-sub-$ResourceGroupName"
-  
-    Write-Information -InformationAction Continue -MessageData "Deployment Stack '$StackName' will be deleted"
+    $StackSubName = "ds-sub-$ResourceGroupName"
+
+    Write-Information -InformationAction Continue -MessageData "Deployment Stack '$StackSubName' will be deleted"
     Write-Information -InformationAction Continue -MessageData "Resource Group '$ResourceGroupName' will be deleted"
 
-    $StackParameters = @(
+    $StackSubParameters = @(
       'stack', 'sub', 'delete',
-      '--name', $StackName,
+      '--name', $StackSubName,
       '--yes',
       '--action-on-unmanage', 'deleteAll',
       '--only-show-errors'
     )
     
     # Delete Stack
-    az @StackParameters
+    az @StackSubParameters
   }
   else {
     Write-Information -InformationAction Continue -MessageData "Cleanup Stack after tests is disabled, the Stack will need to be cleaned up manually."
