@@ -106,9 +106,6 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
-        tokenReplaceEnabled: true
-        tokenTargetPatterns:
-          - tests/design/resource_group/**/*.design.json
         actions:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
@@ -123,6 +120,10 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
+        tokenReplaceEnabled: true
+        tokenTargetPatterns:
+          - platform/*.bicepparam
+          - tests/design/network_services/**/*.design.json
         environments:
           - dev
         actions:
