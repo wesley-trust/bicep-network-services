@@ -85,7 +85,7 @@ extends:
     globalDependsOn: validation
     pipelineType: auto
     actionGroups:
-      - name: bicep_tests_resource_group
+      - name: bicep_tests_resource_group_ci
         enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
         type: powershell
         scriptTask: azureCli
@@ -94,6 +94,8 @@ extends:
         tokenTargetPatterns:
           - platform/resourcegroup.bicepparam
           - tests/design/resource_group/**/*.design.json
+        environments:
+          - dev
         actions:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
@@ -103,6 +105,15 @@ extends:
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
             arguments: "-TestsPath tests/integration/resource_group -ResultsFile TestResults/bicep_tests_resource_group_integration_tests.xml"
+      - name: bicep_tests_resource_group
+        enabled: ${{ not(parameters.doNotRunBicepTestsResourceGroup) }}
+        type: powershell
+        scriptTask: azureCli
+        kind: pester
+        tokenReplaceEnabled: true
+        tokenTargetPatterns:
+          - tests/design/resource_group/**/*.design.json
+        actions:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
@@ -111,7 +122,7 @@ extends:
             enabled: ${{ not(parameters.doNotRunSmoke) }}
             scriptPath: scripts/pester_run.ps1
             arguments: "-TestsPath tests/smoke/resource_group -ResultsFile TestResults/bicep_tests_resource_group_smoke_tests.xml"
-      - name: bicep_tests_network_services
+      - name: bicep_tests_network_services_ci
         enabled: ${{ not(parameters.doNotRunBicepTestsNetworkServices) }}
         type: powershell
         scriptTask: azureCli
@@ -120,6 +131,8 @@ extends:
         tokenTargetPatterns:
           - platform/*.bicepparam
           - tests/design/network_services/**/*.design.json
+        environments:
+          - dev
         actions:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
@@ -129,6 +142,15 @@ extends:
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
             arguments: "-TestsPath tests/integration/network_services -ResultsFile TestResults/bicep_tests_network_services_integration_tests.xml"
+      - name: bicep_tests_network_services
+        enabled: ${{ not(parameters.doNotRunBicepTestsNetworkServices) }}
+        type: powershell
+        scriptTask: azureCli
+        kind: pester
+        tokenReplaceEnabled: true
+        tokenTargetPatterns:
+          - tests/design/network_services/**/*.design.json
+        actions:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
