@@ -93,7 +93,7 @@ extends:
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - platform/resourcegroup.bicepparam
-          - tests/design/resource_group/**/common.design.json
+          - tests/design/resource_group/**/*.design.json
         actions:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
@@ -119,7 +119,7 @@ extends:
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - platform/*.bicepparam
-          - tests/design/network_services/**/common.design.json
+          - tests/design/network_services/**/*.design.json
         actions:
           - name: unit_tests
             enabled: ${{ not(parameters.doNotRunUnit) }}
