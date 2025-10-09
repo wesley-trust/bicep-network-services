@@ -67,11 +67,14 @@ BeforeAll {
     '--parameters', $ResourceGroupParameterFile,
     '--deny-settings-mode', 'DenyWriteAndDelete',
     '--action-on-unmanage', 'detachAll',
-    '--only-show-errors', '--output json'
+    '--only-show-errors'
   )
 
   # Deploy Stack
-  $Deploy = az @StackParameters
+  az @StackParameters
+  
+  # Get Deployment Details
+  $Deploy = az stack sub show --name $StackName --output json
 
   # Create WhatIfObject if WhatIf is not null or empty, and optionally publish artifact
   if ($Deploy) {
