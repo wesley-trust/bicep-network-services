@@ -1,3 +1,290 @@
-Describe 'Regression Tests' {
-  It 'passes' { $true | Should -BeTrue }
+[CmdletBinding()]
+Param(
+  [string]$DesignRoot = "./tests/design/network_services",
+  [string]$Location = $ENV:REGION,
+  [string]$RegionCode = $ENV:REGIONCODE,
+  [string]$Environment = $ENV:ENVIRONMENT,
+  [ValidateSet("Full", "Environment", "Region")][string]$DesignPathSwitch = "Region",
+  [string]$ResourceGroupName = $ENV:RESOURCEGROUP
+)
+
+BeforeDiscovery {
+  
+  $ErrorActionPreference = 'Stop'
+  Set-StrictMode -Version Latest
+
+  # Determine Design Path
+  switch ($DesignPathSwitch) {
+    "Root" {
+      $DesignPath = "$DesignRoot"
+    }
+    "Environment" {
+      $DesignPath = "$DesignRoot/environments/$Environment"
+    }
+    "Region" {
+      $DesignPath = "$DesignRoot/environments/$Environment/regions/$RegionCode"
+    }
+  }
+
+  # Import Design
+  if (Test-Path -Path $DesignPath -PathType Container) {
+    $DesignFiles = Get-ChildItem -Path $DesignPath -Filter "*.design.json" -File | Sort-Object -Property Name
+
+    if (!$DesignFiles) {
+      throw "No design files found in '$DesignPath'."
+    }
+
+    # Build Design JSON array from multiple files
+    $script:Design = foreach ($File in $DesignFiles) {
+      $Content = Get-Content -Path $File.FullName -Raw | ConvertFrom-Json
+
+      if ($Content -is [System.Array]) {
+        $Content
+      }
+      else {
+        @($Content)
+      }
+    }
+  }
+  else {
+    $script:Design = Get-Content -Path $DesignPath -Raw | ConvertFrom-Json
+  }
+
+  # Get unique Resource Types
+  $script:ResourceTypes = $Design.resourceType | Sort-Object -Unique
+
+  # Resource Types that do not have tags
+  $script:ResourceTypeTagExclusion = @(
+    'Microsoft.Network/virtualNetworks/virtualNetworkPeerings'
+    'Microsoft.Network/virtualNetworks/subnets'
+  )
+}
+
+BeforeAll {
+
+  # Validate Resource Group exists
+  $ResourceGroupExists = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+
+  if ($ResourceGroupExists) {
+
+    # Resource Group Stack
+    $StackGroupName = "ds-$ResourceGroupName"
+
+    if ($ResourceGroupReport) {
+      $StackGroupParameters = @(
+        'stack', 'group', 'show',
+        '--name', $StackGroupName,
+        '--resource-group', $ResourceGroupName,
+        '--only-show-errors'
+      )
+
+      # Show Stack
+      $Report = az @StackGroupParameters
+    }
+    else {
+      throw "Resource Group Stack show failed or returned no results."
+    }
+  }
+  else {
+    throw "Resource Group '$ResourceGroupName' does not exist, unable to continue"
+  }
+
+  # Create object if report is not null or empty, and optionally publish artifact
+  if ($Report) {
+    if ($ENV:PUBLISHTESTARTIFACTS) {
+      $Report | Out-File -FilePath "$ENV:BUILD_ARTIFACTSTAGINGDIRECTORY/bicep.report.json"
+    }
+    $ReportObject = $Report | ConvertFrom-Json
+
+    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources.id) {
+      $Resource = Get-AzResource -ResourceId $ResourceId -ExpandProperties
+
+      [PSCustomObject]@{
+        Name       = $Resource.Name
+        Type       = $Resource.ResourceType
+        Id         = $Resource.ResourceId
+        Location   = $Resource.Location
+        Tags       = $Resource.Tags
+        Properties = $Resource.Properties
+      }
+    }
+  }
+  else {
+    throw "Operation failed or returned no results."
+  }
+}
+
+Describe "Resource Design" {
+  
+  Context "Integrity Check" {
+    
+    It "should have at least one Resource Type" {
+
+      # Act
+      $ActualValue = @($ResourceTypes).Count
+
+      # Assert
+      $ActualValue | Should -BeGreaterThan 0
+    }
+  }
+}
+
+Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
+
+  BeforeDiscovery {
+    
+    $ResourceType = $_
+
+    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
+
+    if ($null -ne $Tags) {
+      $TagsObject = @(
+        $Tags.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
+    else {
+      $TagsObject = @()
+    }
+  }
+
+  BeforeAll {
+    
+    $ResourceType = $_
+
+    $Resources = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).resources
+    $Tags = ($Design | Where-Object { $_.resourceType -eq $ResourceType }).tags
+
+    if ($null -ne $Tags) {
+      $TagsObject = @(
+        $Tags.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
+    else {
+      $TagsObject = @()
+    }
+    
+    $ReportResources = $ReportFiltered | Where-Object { $_.type -eq $ResourceType }
+  }
+
+  Context "Integrity Check" {
+    
+    It "should have at least one Resource" {
+
+      # Act
+      $ActualValue = @($Resources).Count
+
+      # Assert
+      $ActualValue | Should -BeGreaterThan 0
+    }
+    
+    It "should have at least one Tag" -Skip:($ResourceTypeTagExclusion -contains $ResourceType) {
+
+      # Act
+      $ActualValue = $TagsObject.Count
+
+      # Assert
+      $ActualValue | Should -BeGreaterThan 0
+    }
+  }
+
+  Context "Resource Name '<_.name>'" -ForEach $Resources {
+
+    BeforeDiscovery {
+      
+      $Resource = $_
+
+      $PropertiesObject = @(
+        $Resource.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+    }
+
+    BeforeAll {
+      
+      $Resource = $_
+      
+      $PropertiesObject = @(
+        $Resource.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
+      
+      $ReportResource = $ReportResources | Where-Object { $_.name -eq $Resource.Name }
+    }
+
+    Context "Integrity Check" {
+      
+      It "should have at least one Property" {
+
+        # Act
+        $ActualValue = $PropertiesObject.Count
+
+        # Assert
+        $ActualValue | Should -BeGreaterThan 0
+      }
+    }
+
+    Context "Properties" {
+      
+      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
+        
+        # Arrange
+        $Property = $_
+        
+        # Mapping of flattened design properties to their nested properties in the report
+        $PropertyMapping = @{
+          'Microsoft.Network/virtualNetworks'         = @{
+            addressPrefixes        = { param($Resource) $Resource.properties.addressSpace.addressPrefixes }
+            dnsServers             = { param($Resource) $Resource.properties.dhcpOptions.dnsServers }
+            subnetNames            = { param($Resource) $Resource.properties.subnets.name }
+            virtualNetworkPeerings = { param($Resource) $Resource.properties.virtualNetworkPeerings.name }
+          }
+          'Microsoft.Network/networkSecurityGroups'   = @{
+            securityRuleNames = { param($Resource) $Resource.properties.securityRules.name }
+          }
+          'Microsoft.Network/routeTables'             = @{
+            routeNames = { param($Resource) $Resource.properties.routes.name }
+          }
+          'Microsoft.Network/virtualNetworks/subnets' = @{
+            addressPrefix          = { param($Resource) $Resource.properties.addressPrefix }
+            delegationName         = { param($Resource)
+              $subnet = Get-AzVirtualNetworkSubnetConfig -ResourceId $Resource.Id
+              $subnet.Delegations.Name # AzResource did not return property
+            }
+            networkSecurityGroupId = { param($Resource) $Resource.properties.networkSecurityGroup.id }
+            routeTableId           = { param($Resource) $Resource.properties.routeTable.id }
+          }
+        }
+
+        # Act
+        # If the property mapping exists for the resource type and property name, use it to extract the property path
+        if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
+          $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource
+        }
+        else {
+          $ActualValue = $ReportResource.$($Property.Name)
+        }
+        
+        # Assert
+        ($ActualValue | Sort-Object) | Should -Be ($Property.Value | Sort-Object)
+      }
+    }
+
+    Context "Tags" {
+      
+      It "should have tag '<_.Name>' with value '<_.Value>'" -ForEach $TagsObject {
+        
+        # Arrange
+        $Tag = $_
+
+        # Act
+        $ActualValue = $ReportResource.Tags.$($Tag.Name)
+
+        # Assert
+        $ActualValue | Should -BeExactly $Tag.Value
+      }
+    }
+  }
 }

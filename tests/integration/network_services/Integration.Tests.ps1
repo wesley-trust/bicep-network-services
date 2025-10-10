@@ -131,19 +131,6 @@ BeforeAll {
         Tags       = $Resource.Tags
         Properties = $Resource.Properties
       }
-
-      # $ResourceProperties = [ordered]@{
-      #   Name     = $Resource.ResourceGroupName
-      #   Type     = $Resource.ResourceType
-      #   Location = $Resource.Location
-      #   Tags     = $Resource.Tags
-      # }
-
-      # foreach ($Property in $Resource.PSObject.Properties) {
-      #   $ResourceProperties[$Property.Name] = $Property.Value
-      # }
-
-      # [PSCustomObject]$ResourceProperties
     }
   }
   else {
@@ -286,10 +273,9 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
           }
           'Microsoft.Network/virtualNetworks/subnets' = @{
             addressPrefix          = { param($Resource) $Resource.properties.addressPrefix }
-            delegationName         = {
-              param($Resource)
+            delegationName         = { param($Resource)
               $subnet = Get-AzVirtualNetworkSubnetConfig -ResourceId $Resource.Id
-              $subnet.Delegations.Name
+              $subnet.Delegations.Name # AzResource did not return property
             }
             networkSecurityGroupId = { param($Resource) $Resource.properties.networkSecurityGroup.id }
             routeTableId           = { param($Resource) $Resource.properties.routeTable.id }
