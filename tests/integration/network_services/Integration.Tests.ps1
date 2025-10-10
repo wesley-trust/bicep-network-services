@@ -120,15 +120,13 @@ BeforeAll {
     }
     $ReportObject = $Report | ConvertFrom-Json
 
-    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources.id) {     
+    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources.id) {
       $Resource = Get-AzResource -ResourceId $ResourceId
 
-      [PSCustomObject]@{
-        Name     = $Resource.ResourceGroupName
-        Type     = $Resource.Type
-        Location = $Resource.Location
-        Tags     = $Resource.Tags
-      }
+      [PSCustomObject]@(
+        $Resource.PSObject.Properties |
+        ForEach-Object { [PSCustomObject]@{ Name = $_.Name; Value = $_.Value } }
+      )
     }
   }
   else {
