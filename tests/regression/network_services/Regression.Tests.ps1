@@ -70,20 +70,15 @@ BeforeAll {
     # Resource Group Stack
     $StackGroupName = "ds-$ResourceGroupName"
 
-    if ($ResourceGroupReport) {
-      $StackGroupParameters = @(
-        'stack', 'group', 'show',
-        '--name', $StackGroupName,
-        '--resource-group', $ResourceGroupName,
-        '--only-show-errors'
-      )
+    $StackGroupParameters = @(
+      'stack', 'group', 'show',
+      '--name', $StackGroupName,
+      '--resource-group', $ResourceGroupName,
+      '--only-show-errors'
+    )
 
-      # Show Stack
-      $Report = az @StackGroupParameters
-    }
-    else {
-      throw "Resource Group Stack show failed or returned no results."
-    }
+    # Show Stack
+    $Report = az @StackGroupParameters
   }
   else {
     throw "Resource Group '$ResourceGroupName' does not exist, unable to continue"
