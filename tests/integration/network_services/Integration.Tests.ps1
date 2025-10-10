@@ -252,37 +252,9 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         
         # Arrange
         $Property = $_
-        
-        # Mapping of flattened design properties to their nested properties in the report
-        $PropertyMapping = @{
-          'Microsoft.Network/virtualNetworks'         = @{
-            addressPrefixes        = { param($Resource) $Resource.properties.addressSpace.addressPrefixes }
-            dnsServers             = { param($Resource) $Resource.properties.dhcpOptions.dnsServers }
-            subnetNames            = { param($Resource) $Resource.properties.subnets.name }
-            virtualNetworkPeerings = { param($Resource) $Resource.properties.virtualNetworkPeerings.name }
-          }
-          'Microsoft.Network/networkSecurityGroups'   = @{
-            securityRuleNames = { param($Resource) $Resource.properties.securityRules.name }
-          }
-          'Microsoft.Network/routeTables'             = @{
-            routeNames = { param($Resource) $Resource.properties.routes.name }
-          }
-          'Microsoft.Network/virtualNetworks/subnets' = @{
-            addressPrefix          = { param($Resource) $Resource.properties.addressPrefix }
-            delegationName         = { param($Resource) $Resource.properties.delegations.name }
-            networkSecurityGroupId = { param($Resource) $Resource.properties.networkSecurityGroup.id }
-            routeTableId           = { param($Resource) $Resource.properties.routeTable.id }
-          }
-        }
 
         # Act
-        # If the property mapping exists for the resource type and property name, use it to extract the property path
-        if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
-          $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource
-        }
-        else {
-          $ActualValue = $ReportResource.$($Property.Name)
-        }
+        $ActualValue = $ReportResource.$($Property.Name)
 
         # Assert
         $ActualValue | Should -Be $Property.Value
