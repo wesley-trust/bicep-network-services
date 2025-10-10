@@ -82,26 +82,35 @@ BeforeAll {
   # Deploy Stack
   $ResourceGroupReport = az @StackSubParameters
 
-  # Resource Group Stack
-  $StackGroupName = "ds-$ResourceGroupName"
+  # Validate Resource Group exists
+  $ResourceGroupExists = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
 
-  if ($ResourceGroupReport) {
-    $StackGroupParameters = @(
-      'stack', 'group', 'create',
-      '--name', $StackGroupName,
-      '--resource-group', $ResourceGroupName,
-      '--template-file', $ResourceGroupTemplateFile,
-      '--parameters', $ResourceGroupParameterFile,
-      '--deny-settings-mode', 'DenyWriteAndDelete',
-      '--action-on-unmanage', 'detachAll',
-      '--only-show-errors'
-    )
+  if ($ResourceGroupExists) {
 
-    # Deploy Stack
-    $Report = az @StackGroupParameters
+    # Resource Group Stack
+    $StackGroupName = "ds-$ResourceGroupName"
+
+    if ($ResourceGroupReport) {
+      $StackGroupParameters = @(
+        'stack', 'group', 'create',
+        '--name', $StackGroupName,
+        '--resource-group', $ResourceGroupName,
+        '--template-file', $ResourceGroupTemplateFile,
+        '--parameters', $ResourceGroupParameterFile,
+        '--deny-settings-mode', 'DenyWriteAndDelete',
+        '--action-on-unmanage', 'detachAll',
+        '--only-show-errors'
+      )
+
+      # Deploy Stack
+      $Report = az @StackGroupParameters
+    }
+    else {
+      throw "Resource Group Stack deployment failed or returned no results."
+    }
   }
   else {
-    throw "Resource Group Stack deployment failed or returned no results."
+    throw "Resource Group '$ResourceGroupName' does not exist, unable to continue"
   }
 
   # Create object if report is not null or empty, and optionally publish artifact
