@@ -95,8 +95,8 @@ BeforeAll {
         'stack', 'group', 'create',
         '--name', $StackGroupName,
         '--resource-group', $ResourceGroupName,
-        '--template-file', $ResourceGroupTemplateFile,
-        '--parameters', $ResourceGroupParameterFile,
+        '--template-file', $ResourceTemplateFile,
+        '--parameters', $ResourceParameterFile,
         '--deny-settings-mode', 'DenyWriteAndDelete',
         '--action-on-unmanage', 'detachAll',
         '--only-show-errors'
@@ -120,9 +120,16 @@ BeforeAll {
     }
     $ReportObject = $Report | ConvertFrom-Json
 
-    Write-Host $ReportFiltered
-    
-    #$ReportFiltered = $ReportObject.changes.after
+    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources.id) {     
+      $Resource = Get-AzResource -ResourceId $ResourceId
+
+      [PSCustomObject]@{
+        Name     = $Resource.ResourceGroupName
+        Type     = $Resource.Type
+        Location = $Resource.Location
+        Tags     = $Resource.Tags
+      }
+    }
   }
   else {
     throw "Operation failed or returned no results."
