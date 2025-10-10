@@ -299,14 +299,14 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         # Act
         # If the property mapping exists for the resource type and property name, use it to extract the property path
         if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
-          $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource | Sort-Object
+          $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource
         }
         else {
-          $ActualValue = $ReportResource.$($Property.Name) | Sort-Object
+          $ActualValue = $ReportResource.$($Property.Name)
         }
-
+        
         # Assert
-        $ActualValue | Should -Be $Property.Value | Sort-Object
+        ($ActualValue | Sort-Object) | Should -Be ($Property.Value | Sort-Object)
       }
     }
 
