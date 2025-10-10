@@ -126,6 +126,7 @@ BeforeAll {
       [PSCustomObject]@{
         Name       = $Resource.Name
         Type       = $Resource.ResourceType
+        Id         = $Resource.ResourceId
         Location   = $Resource.Location
         Tags       = $Resource.Tags
         Properties = $Resource.Properties
@@ -285,7 +286,11 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
           }
           'Microsoft.Network/virtualNetworks/subnets' = @{
             addressPrefix          = { param($Resource) $Resource.properties.addressPrefix }
-            delegationName         = { param($Resource) $Resource.properties.delegations.name }
+            delegationName         = {
+              param($Resource)
+              $subnet = Get-AzVirtualNetworkSubnetConfig -ResourceId $Resource.Id
+              $subnet.Delegations.Name
+            }
             networkSecurityGroupId = { param($Resource) $Resource.properties.networkSecurityGroup.id }
             routeTableId           = { param($Resource) $Resource.properties.routeTable.id }
           }
@@ -294,14 +299,14 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         # Act
         # If the property mapping exists for the resource type and property name, use it to extract the property path
         if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
-          $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource
+          $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource | Sort-Object
         }
         else {
-          $ActualValue = $ReportResource.$($Property.Name)
+          $ActualValue = $ReportResource.$($Property.Name) | Sort-Object
         }
 
         # Assert
-        $ActualValue | Should -Be $Property.Value
+        $ActualValue | Should -Be $Property.Value | Sort-Object
       }
     }
 
