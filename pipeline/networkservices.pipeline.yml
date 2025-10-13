@@ -58,24 +58,6 @@ parameters:
       - 45
       - 60
 
-  # Operational flags
-  - name: unmanageResourceGroup
-    displayName: "Temporarily Unmanage Resource Group"
-    type: boolean
-    default: false
-  - name: unmanageNetworkServices
-    displayName: "Temporarily Unmanage Network Services"
-    type: boolean
-    default: false
-  - name: allowDeleteOnUnmanage
-    displayName: "Temporarily Allow Delete on Unmanage"
-    type: boolean
-    default: false
-  - name: cleanupResourceGroupStack
-    displayName: "Cleanup Resource Group Stack"
-    type: boolean
-    default: false
-
   # Environment skips
   - name: skip_dev
     displayName: "Skip Environments: Development"
@@ -97,6 +79,24 @@ parameters:
     default: false
   - name: skip_secondary
     displayName: "Skip Regions: Secondary"
+    type: boolean
+    default: false
+
+  # Operational flags
+  - name: unmanageResourceGroup
+    displayName: "Temporarily Unmanage Resource Group"
+    type: boolean
+    default: false
+  - name: unmanageNetworkServices
+    displayName: "Temporarily Unmanage Network Services"
+    type: boolean
+    default: false
+  - name: allowDeleteOnUnmanage
+    displayName: "Temporarily Allow Delete on Unmanage"
+    type: boolean
+    default: false
+  - name: cleanupResourceGroupStack
+    displayName: "Cleanup Resource Group Stack"
     type: boolean
     default: false
 
