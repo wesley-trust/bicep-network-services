@@ -83,14 +83,6 @@ parameters:
     default: false
 
   # Operational flags
-  - name: unmanageResourceGroup
-    displayName: "Temporarily Unmanage Resource Group"
-    type: boolean
-    default: false
-  - name: unmanageNetworkServices
-    displayName: "Temporarily Unmanage Network Services"
-    type: boolean
-    default: false
   - name: allowDeleteOnUnmanage
     displayName: "Temporarily Allow Delete on Unmanage"
     type: boolean
@@ -99,15 +91,6 @@ parameters:
     displayName: "Cleanup Resource Group Stack"
     type: boolean
     default: false
-
-# Override deployment flags based on unmanage parameters
-# variables:
-#   ${{ if parameters.unmanageResourceGroup }}:
-#     - name: deployResourceGroup
-#       value: false
-#   ${{ if parameters.unmanageNetworkServices }}:
-#     - name: deployNetworkServices
-#       value: false
 
 extends:
   template: networkservices.settings.yml
