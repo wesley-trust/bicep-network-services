@@ -5,7 +5,8 @@ Param(
   [string]$RegionCode = $ENV:REGIONCODE,
   [string]$Environment = $ENV:ENVIRONMENT,
   [ValidateSet("Full", "Environment", "Region")][string]$DesignPathSwitch = "Region",
-  [string]$ResourceGroupName = $ENV:RESOURCEGROUP
+  [string]$ResourceGroupName = $ENV:RESOURCEGROUP,
+  [Parameter(Mandatory = $true)][string]$Name
 )
 
 BeforeDiscovery {
@@ -68,7 +69,7 @@ BeforeAll {
   if ($ResourceGroupExists) {
 
     # Resource Group Stack
-    $StackGroupName = "ds-$ResourceGroupName"
+    $StackGroupName = "ds-$ResourceGroupName-$Name"
 
     $StackGroupParameters = @(
       'stack', 'group', 'show',
