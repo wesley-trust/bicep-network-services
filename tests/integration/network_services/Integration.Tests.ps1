@@ -126,17 +126,22 @@ BeforeAll {
     }
     $ReportObject = $Report | ConvertFrom-Json
 
-    $ReportFiltered = foreach ($ResourceId in $ReportObject.resources.id) {
-      $Resource = Get-AzResource -ResourceId $ResourceId -ExpandProperties
+    if ($ReportObject.resources) {
+      $ReportFiltered = foreach ($ResourceId in $ReportObject.resources.id) {
+        $Resource = Get-AzResource -ResourceId $ResourceId -ExpandProperties
 
-      [PSCustomObject]@{
-        Name       = $Resource.Name
-        Type       = $Resource.ResourceType
-        Id         = $Resource.ResourceId
-        Location   = $Resource.Location
-        Tags       = $Resource.Tags
-        Properties = $Resource.Properties
+        [PSCustomObject]@{
+          Name       = $Resource.Name
+          Type       = $Resource.ResourceType
+          Id         = $Resource.ResourceId
+          Location   = $Resource.Location
+          Tags       = $Resource.Tags
+          Properties = $Resource.Properties
+        }
       }
+    }
+    else {
+      Write-Information -InformationAction Continue -MessageData "No resources found in stack '$StackGroupName'."
     }
   }
   else {
