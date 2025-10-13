@@ -12,7 +12,7 @@ variables:
   resourceGroup: rg-$(service)-$(environment)-$(regionCode)-$(deploymentVersion)
 
   # Network Services configuration
-  deployNetworkServices: false # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
+  deployNetworkServices: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
 
   ## Virtual Network configuration
   deployVirtualNetwork: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
