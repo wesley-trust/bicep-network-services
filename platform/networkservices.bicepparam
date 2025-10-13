@@ -7,6 +7,9 @@ param tags = {
   service: '#{{ service }}'
 }
 
+// Service
+param deployNetworkServicesString = '#{{ deployNetworkServices }}'
+
 // Route Table
 param deployRouteTableString = '#{{ deployRouteTable }}'
 
