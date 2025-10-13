@@ -144,11 +144,11 @@ extends:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-PathRoot tests -TestData @{Type='regression'; Name='resource_group'} -ResultsFile TestResults/bicep_tests_resource_group_regression_tests.xml"
+            arguments: "-PathRoot tests -Type regression -TestData @{Name='resource_group'} -ResultsFile TestResults/bicep_tests_resource_group_regression_tests.xml"
           - name: smoke_tests
             enabled: ${{ not(parameters.doNotRunSmoke) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-PathRoot tests -TestData @{Type='smoke'; Name='resource_group'} -ResultsFile TestResults/bicep_tests_resource_group_smoke_tests.xml"
+            arguments: "-PathRoot tests -Type smoke -TestData @{Name='resource_group'} -ResultsFile TestResults/bicep_tests_resource_group_smoke_tests.xml"
       - name: bicep_tests_network_services
         enabled: ${{ not(parameters.doNotRunBicepTestsNetworkServices) }}
         type: powershell
@@ -165,8 +165,8 @@ extends:
           - name: regression_tests
             enabled: ${{ not(parameters.doNotRunRegression) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-PathRoot tests -TestData @{Type='regression'; Name='network_services'} -ResultsFile TestResults/bicep_tests_network_services_regression_tests.xml"
+            arguments: "-PathRoot tests -Type regression -TestData @{Name='network_services'} -ResultsFile TestResults/bicep_tests_network_services_regression_tests.xml"
           - name: smoke_tests
             enabled: ${{ not(parameters.doNotRunSmoke) }}
             scriptPath: scripts/pester_run.ps1
-            arguments: "-PathRoot tests -TestData @{Type='smoke'; Name='network_services'} -ResultsFile TestResults/bicep_tests_network_services_smoke_tests.xml"
+            arguments: "-PathRoot tests -Type smoke -TestData @{Name='network_services'} -ResultsFile TestResults/bicep_tests_network_services_smoke_tests.xml"

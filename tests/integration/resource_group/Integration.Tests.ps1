@@ -7,7 +7,8 @@ Param(
   [ValidateSet("Full", "Environment", "Region")][string]$DesignPathSwitch = "Region",
   [string]$ResourceGroupTemplateFile = "./platform/resourcegroup.bicep",
   [string]$ResourceGroupParameterFile = "./platform/resourcegroup.bicepparam",
-  [string]$ResourceGroupName = $ENV:RESOURCEGROUP
+  [string]$ResourceGroupName = $ENV:RESOURCEGROUP,
+  [string]$Name
 )
 
 BeforeDiscovery {
@@ -58,6 +59,7 @@ BeforeDiscovery {
 
 BeforeAll {
 
+  # Subscription Stack
   $StackSubName = "ds-sub-$ResourceGroupName"
 
   $StackSubParameters = @(

@@ -9,7 +9,8 @@ Param(
   [string]$ResourceGroupParameterFile = "./platform/resourcegroup.bicepparam",
   [string]$ResourceTemplateFile = "./platform/networkservices.bicep",
   [string]$ResourceParameterFile = "./platform/networkservices.bicepparam",
-  [string]$ResourceGroupName = $ENV:RESOURCEGROUP
+  [string]$ResourceGroupName = $ENV:RESOURCEGROUP,
+  [string]$Name
 )
 
 BeforeDiscovery {
@@ -88,7 +89,12 @@ BeforeAll {
   if ($ResourceGroupExists) {
 
     # Resource Group Stack
-    $StackGroupName = "ds-$ResourceGroupName"
+    if ($Name) {
+      $StackGroupName = "ds-$ResourceGroupName-$Name"
+    }
+    else {
+      $StackGroupName = "ds-$ResourceGroupName"
+    }
 
     if ($ResourceGroupReport) {
       $StackGroupParameters = @(

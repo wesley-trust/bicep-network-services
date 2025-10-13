@@ -9,7 +9,8 @@ Param(
   [string]$ResourceGroupParameterFile = "./platform/resourcegroup.bicepparam",
   [string]$ResourceTemplateFile = "./platform/networkservices.bicep",
   [string]$ResourceParameterFile = "./platform/networkservices.bicepparam",
-  [string]$ResourceGroupName = $ENV:RESOURCEGROUP
+  [string]$ResourceGroupName = $ENV:RESOURCEGROUP,
+  [string]$Name
 )
 
 BeforeDiscovery {
@@ -72,6 +73,7 @@ BeforeAll {
 
     Write-Information -InformationAction Continue -MessageData "Resource Group '$ResourceGroupName' does not exist. Creating."
 
+    # Subscription Stack
     $StackSubName = "ds-sub-$ResourceGroupName"
 
     $StackSubParameters = @(

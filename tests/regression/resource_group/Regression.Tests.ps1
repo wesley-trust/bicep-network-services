@@ -5,7 +5,8 @@ Param(
   [string]$RegionCode = $ENV:REGIONCODE,
   [string]$Environment = $ENV:ENVIRONMENT,
   [ValidateSet("Full", "Environment", "Region")][string]$DesignPathSwitch = "Region",
-  [string]$ResourceGroupName = $ENV:RESOURCEGROUP
+  [string]$ResourceGroupName = $ENV:RESOURCEGROUP,
+  [string]$Name
 )
 
 BeforeDiscovery {
@@ -56,6 +57,7 @@ BeforeDiscovery {
 
 BeforeAll {
 
+  # Subscription Stack
   $StackSubName = "ds-sub-$ResourceGroupName"
 
   $StackSubParameters = @(

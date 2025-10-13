@@ -1,5 +1,6 @@
 param(
-  [Parameter(Mandatory = $true)][string]$PathRoot,  
+  [Parameter(Mandatory = $true)][string]$PathRoot,
+  [Parameter(Mandatory = $true)][string]$Type,
   [Parameter(Mandatory = $true)][string]$ResultsFile,
   [string]$ResultsFormat = 'NUnitXml',
   [hashtable]$TestData
@@ -30,7 +31,7 @@ try {
     -ApplicationId $env:servicePrincipalId `
     -FederatedToken $env:idToken
 
-  $containerArgs = @{ Path = "$PathRoot/$($TestData.Type)/$($TestData.Name)" }
+  $containerArgs = @{ Path = "$PathRoot/$Type/$($TestData.Name)" }
   if ($PSBoundParameters.ContainsKey('TestData') -and $null -ne $TestData) {
     $containerArgs.Data = $TestData
   }
