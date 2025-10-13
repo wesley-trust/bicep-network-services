@@ -101,13 +101,13 @@ parameters:
     default: false
 
 # Override deployment flags based on unmanage parameters
-variables:
-  ${{ if parameters.unmanageResourceGroup }}:
-    - name: deployResourceGroup
-      value: false
-  ${{ if parameters.unmanageNetworkServices }}:
-    - name: deployNetworkServices
-      value: false
+# variables:
+#   ${{ if parameters.unmanageResourceGroup }}:
+#     - name: deployResourceGroup
+#       value: false
+#   ${{ if parameters.unmanageNetworkServices }}:
+#     - name: deployNetworkServices
+#       value: false
 
 extends:
   template: networkservices.settings.yml
