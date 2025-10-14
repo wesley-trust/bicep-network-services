@@ -4,6 +4,6 @@ variables:
   publishTestArtifacts: true
 
   # Append suffix to deploymentVersion for Tests, to allow multiple runs, with optional cleanup
-  testsDeploymentSuffixEnabled: true
-  testsDeploymentSuffixPipelineFilter: test
+  # testsDeploymentSuffixEnabled: true
+  # testsDeploymentSuffixPipelineFilter: test
   testsCleanUpStackAfterTest: true

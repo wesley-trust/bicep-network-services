@@ -80,6 +80,7 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
+        testsDeploymentSuffixEnabled: true
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - platform/resourcegroup.bicepparam
@@ -117,6 +118,7 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
+        testsDeploymentSuffixEnabled: true
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - platform/*.bicepparam
