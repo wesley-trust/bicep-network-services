@@ -96,7 +96,7 @@ param subnets = [
   }
 ]
 
-param testsDisableNetworkPeeringString = '#{{ testsDisableNetworkPeering }}'
+param excludePropertyVirtualNetworkPeeringsString = '#{{ excludePropertyVirtualNetworkPeerings }}'
 
 param peerings = [
   {

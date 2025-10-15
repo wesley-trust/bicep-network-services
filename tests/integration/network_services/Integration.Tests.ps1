@@ -55,8 +55,17 @@ BeforeDiscovery {
     $script:Design = Get-Content -Path $DesignPath -Raw | ConvertFrom-Json
   }
 
-  # Get unique Resource Types
-  $script:ResourceTypes = $Design.resourceType | Sort-Object -Unique
+  # Resource Types to exclude from testing based on environment variables
+  $ResourceTypeExclusion = @(
+    if ($ENV:EXCLUDETYPEVIRTUALNETWORKPEERINGS) {
+      'Microsoft.Network/virtualNetworks/virtualNetworkPeerings'
+    }
+  )
+
+  # Get unique Resource Types, excluding those in the exclusion list
+  $script:ResourceTypes = $Design.resourceType | 
+  Where-Object { $_ -notin $ResourceTypeExclusion } | 
+  Sort-Object -Unique
 
   # Resource Types that do not have tags
   $script:ResourceTypeTagExclusion = @(
@@ -67,7 +76,7 @@ BeforeDiscovery {
   # Optional skip matrix for resource properties (driven by env switches)
   $script:PropertySkipMatrix = @{
     'Microsoft.Network/virtualNetworks' = @{
-      virtualNetworkPeerings = $ENV:TESTSDISABLENETWORKPEERING
+      virtualNetworkPeerings = $ENV:EXCLUDEPROPERTYVIRTUALNETWORKPEERINGS
     }
   }
 }
@@ -300,17 +309,15 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
           }
         }
 
+        # Act
         # Skip when the property is disabled for this resource type
         $PropertyValue = $PropertySkipMatrix[$ResourceType]?[$Property.Name]
-        if ($PropertyValue) {
-          $SkipProperty = [bool]::Parse($PropertyValue)
-        }
+        $SkipProperty = $PropertyValue ? [bool]::Parse($PropertyValue) : $false
 
         if ($SkipProperty) {
-          Skip -Because "Skipping property '$($Property.Name)' for resource type '$ResourceType' because it is disabled for this test run."
+          Set-ItResult -Skipped -Because "it is not applicable for this test"
         }
-
-        # Act
+        
         # If the property mapping exists for the resource type and property name, use it to extract the property path
         if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
           $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource
