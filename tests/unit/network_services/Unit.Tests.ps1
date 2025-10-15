@@ -232,7 +232,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     Context "Properties" {
       
-      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject -Skip:($PropertySkipMatrix[$ResourceType]?[$Property.Name] -eq 'true') {
+      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject -Skip:($PropertySkipMatrix[$ResourceType]?[$_.Name] -eq 'true') {
         
         # Arrange
         $Property = $_
