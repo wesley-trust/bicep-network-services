@@ -270,7 +270,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     Context "Properties" {
       
-      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject -Skip:($PropertySkipMatrix[$ResourceType][$_.Name] -eq 'true') {
+      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         
         # Arrange
         $Property = $_
@@ -298,6 +298,16 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
             networkSecurityGroupId = { param($Resource) $Resource.properties.networkSecurityGroup.id }
             routeTableId           = { param($Resource) $Resource.properties.routeTable.id }
           }
+        }
+
+        # Skip when the property is disabled for this resource type
+        $PropertyValue = $PropertySkipMatrix[$ResourceType][$Property.Name]
+        if ($PropertyValue) {
+          $SkipProperty = [bool]::Parse($PropertyValue)
+        }
+
+        if ($SkipProperty) {
+          Skip -Because "Skipping property '$($Property.Name)' for resource type '$ResourceType' because it is disabled for this test run."
         }
 
         # Act
