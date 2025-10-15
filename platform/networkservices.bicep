@@ -82,6 +82,10 @@ var subnetsWithRtAndNsg = [
   )
 ]
 
+@description('Flag to disable virtual network peerings during test executions. Accepted values: "true", "false".')
+param testsDisableNetworkPeeringString string = 'false'
+var testsDisableNetworkPeering = bool(testsDisableNetworkPeeringString)
+
 @description('Array of virtual network peerings to create. Each peering should be in peeringType (object) format.')
 param peerings array = []
 
@@ -95,7 +99,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (de
     addressPrefixes: addressPrefixes
     dnsServers: dnsServers
     subnets: subnetsWithRtAndNsg
-    peerings: peerings
+    peerings: testsDisableNetworkPeering ? [] : peerings
     tags: normalizedTags
     enableVmProtection: enableVmProtection
   }

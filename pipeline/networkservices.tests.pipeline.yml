@@ -80,7 +80,9 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
-        testsDeploymentSuffixEnabled: true
+        variableOverridesEnabled: true
+        variableOverrides:
+          dynamicDeploymentVersionEnabled: true
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - platform/resourcegroup.bicepparam
@@ -118,7 +120,10 @@ extends:
         type: powershell
         scriptTask: azureCli
         kind: pester
-        testsDeploymentSuffixEnabled: true
+        variableOverridesEnabled: true
+        variableOverrides:
+          dynamicDeploymentVersionEnabled: true
+          testsDisableNetworkPeering: true
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - platform/*.bicepparam

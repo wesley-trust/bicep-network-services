@@ -2,8 +2,3 @@
 variables:
   environment: qa
   publishTestArtifacts: true
-
-  # Append suffix to deploymentVersion for Tests, to allow multiple runs, with optional cleanup
-  testsDeploymentSuffixEnabled: true
-  testsDeploymentSuffixPipelineFilter: test
-  testsCleanUpStackAfterTest: true

@@ -96,6 +96,8 @@ param subnets = [
   }
 ]
 
+param testsDisableNetworkPeeringString = '#{{ testsDisableNetworkPeering }}'
+
 param peerings = [
   {
     allowForwardedTraffic: true
