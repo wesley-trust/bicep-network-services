@@ -301,7 +301,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         }
 
         # Skip when the property is disabled for this resource type
-        $PropertyValue = $PropertySkipMatrix[$ResourceType][$Property.Name]
+        $PropertyValue = $PropertySkipMatrix[$ResourceType]?[$Property.Name]
         if ($PropertyValue) {
           $SkipProperty = [bool]::Parse($PropertyValue)
         }
