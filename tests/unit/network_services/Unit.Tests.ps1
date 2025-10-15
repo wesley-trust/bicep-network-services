@@ -232,7 +232,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     Context "Properties" {
       
-      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject -Skip:($PropertySkipMatrix[$ResourceType]?[$_.Name] -eq 'true') {
+      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
         
         # Arrange
         $Property = $_
@@ -260,6 +260,16 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         }
 
         # Act
+        # Skip when the property is disabled for this resource type
+        $PropertyValue = $PropertySkipMatrix[$ResourceType]?[$Property.Name]
+        if ($PropertyValue) {
+          $SkipProperty = [bool]::Parse($PropertyValue)
+        }
+
+        if ($SkipProperty) {
+          Set-ItResult -Skipped -Because "Skipping property '$($Property.Name)' for resource type '$ResourceType' because it is disabled for this test run."
+        }
+        
         # If the property mapping exists for the resource type and property name, use it to extract the property path
         if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
           $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource
