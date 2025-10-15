@@ -63,6 +63,13 @@ BeforeDiscovery {
     'Microsoft.Network/virtualNetworks/virtualNetworkPeerings'
     'Microsoft.Network/virtualNetworks/subnets'
   )
+
+  # Optional skip matrix for resource properties (driven by env switches)
+  $script:PropertySkipMatrix = @{
+    'Microsoft.Network/virtualNetworks' = @{
+      virtualNetworkPeerings = $ENV:TESTSDISABLENETWORKPEERING
+    }
+  }
 }
 
 BeforeAll {
@@ -225,7 +232,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
 
     Context "Properties" {
       
-      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject {
+      It "should have property '<_.Name>' with value '<_.Value>'" -ForEach $PropertiesObject -Skip:($PropertySkipMatrix[$ResourceType][$_.Name] -eq 'true') {
         
         # Arrange
         $Property = $_
