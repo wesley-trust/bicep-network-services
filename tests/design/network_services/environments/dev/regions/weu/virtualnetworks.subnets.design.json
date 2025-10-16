@@ -1,6 +1,7 @@
 {
   "resourceType": "Microsoft.Network/virtualNetworks/subnets",
   "tags": {},
+  "health": {},
   "resources": [
     {
       "name": "snet-network-dev-weu-vnet-001-cae-001",
