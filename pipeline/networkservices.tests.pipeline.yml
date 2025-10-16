@@ -94,15 +94,25 @@ extends:
             enabled: ${{ not(parameters.doNotRunUnit) }}
             scriptPath: scripts/pester_run.ps1
             arguments: "-PathRoot tests -Type unit -TestData @{Name='resource_group'} -ResultsFile TestResults/bicep_tests_resource_group_ci_unit_tests.xml"
+            runConditions:
+              allowReasons:
+                - IndividualCI
+                - BatchedCI
           - name: integration_tests
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
             arguments: "-PathRoot tests -Type integration -TestData @{Name='resource_group'} -ResultsFile TestResults/bicep_tests_resource_group_ci_integration_tests.xml"
+            runConditions:
+              allowReasons:
+                - PullRequest
       - name: bicep_tests_resource_group
         enabled: ${{ and( or(not(parameters.doNotRunRegression), not(parameters.doNotRunSmoke)), not(parameters.doNotRunBicepTestsResourceGroup) ) }}
         type: powershell
         scriptTask: azureCli
         kind: pester
+        runConditions:
+          allowReasons:
+            - Schedule
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - tests/design/resource_group/**/*.design.json
@@ -136,15 +146,25 @@ extends:
             enabled: ${{ not(parameters.doNotRunUnit) }}
             scriptPath: scripts/pester_run.ps1
             arguments: "-PathRoot tests -Type unit -TestData @{Name='network_services'} -ResultsFile TestResults/bicep_tests_network_services_ci_unit_tests.xml"
+            runConditions:
+              allowReasons:
+                - IndividualCI
+                - BatchedCI
           - name: integration_tests
             enabled: ${{ not(parameters.doNotRunIntegration) }}
             scriptPath: scripts/pester_run.ps1
             arguments: "-PathRoot tests -Type integration -TestData @{Name='network_services'} -ResultsFile TestResults/bicep_tests_network_services_ci_integration_tests.xml"
+            runConditions:
+              allowReasons:
+                - PullRequest
       - name: bicep_tests_network_services
         enabled: ${{ and( or(not(parameters.doNotRunRegression), not(parameters.doNotRunSmoke)), not(parameters.doNotRunBicepTestsNetworkServices) ) }}
         type: powershell
         scriptTask: azureCli
         kind: pester
+        runConditions:
+          allowReasons:
+            - Schedule
         tokenReplaceEnabled: true
         tokenTargetPatterns:
           - tests/design/network_services/**/*.design.json
