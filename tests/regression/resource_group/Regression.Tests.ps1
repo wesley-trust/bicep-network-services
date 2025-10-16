@@ -94,7 +94,7 @@ BeforeAll {
     }
   }
   else {
-    Write-Information -InformationAction Continue -MessageData "No resources found in stack '$StackGroupName'."
+    Write-Information -InformationAction Continue -MessageData "No resources found in stack '$StackSubName'."
   }
 }
 
