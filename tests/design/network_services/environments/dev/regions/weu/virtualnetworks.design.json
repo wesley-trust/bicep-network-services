@@ -5,6 +5,9 @@
     "owner": "platform-team",
     "service": "network"
   },
+  "health": {
+    "provisioningState": "Succeeded"
+  },
   "resources": [
     {
       "name": "vnet-network-dev-weu-001",

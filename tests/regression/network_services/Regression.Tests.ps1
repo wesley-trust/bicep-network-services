@@ -59,7 +59,15 @@ BeforeDiscovery {
     'Microsoft.Network/virtualNetworks/virtualNetworkPeerings'
     'Microsoft.Network/virtualNetworks/subnets'
   )
+
+  # Optional skip matrix for resource properties
+  $script:PropertySkipMatrix = @{
+    'Microsoft.Network/virtualNetworks' = @{
+      virtualNetworkPeerings = $ENV:EXCLUDEPROPERTYVIRTUALNETWORKPEERINGS
+    }
+  }
 }
+
 
 BeforeAll {
 
@@ -265,6 +273,14 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         }
 
         # Act
+        # Skip when the property is disabled for this resource type
+        $PropertyValue = $PropertySkipMatrix[$ResourceType]?[$Property.Name]
+        $SkipProperty = $PropertyValue ? [bool]::Parse($PropertyValue) : $false
+
+        if ($SkipProperty) {
+          Set-ItResult -Skipped -Because "it is not applicable for this test"
+        }
+        
         # If the property mapping exists for the resource type and property name, use it to extract the property path
         if ($PropertyMapping[$ResourceType]?.ContainsKey($Property.Name)) {
           $ActualValue = & $PropertyMapping[$ResourceType][$Property.Name] $ReportResource

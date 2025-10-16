@@ -55,6 +55,9 @@ BeforeDiscovery {
 
   # Get unique Resource Types
   $script:ResourceTypes = $Design.resourceType | Sort-Object -Unique
+  
+  # Optional skip matrix for resource properties
+  $script:PropertySkipMatrix = @{}
 }
 
 BeforeAll {
@@ -222,6 +225,14 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
         $Property = $_
         
         # Act
+        # Skip when the property is disabled for this resource type
+        $PropertyValue = $PropertySkipMatrix[$ResourceType]?[$Property.Name]
+        $SkipProperty = $PropertyValue ? [bool]::Parse($PropertyValue) : $false
+
+        if ($SkipProperty) {
+          Set-ItResult -Skipped -Because "it is not applicable for this test"
+        }
+
         $ActualValue = $ReportResource.$($Property.Name)
 
         # Assert

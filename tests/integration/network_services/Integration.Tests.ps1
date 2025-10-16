@@ -73,7 +73,7 @@ BeforeDiscovery {
     'Microsoft.Network/virtualNetworks/subnets'
   )
 
-  # Optional skip matrix for resource properties (driven by env switches)
+  # Optional skip matrix for resource properties
   $script:PropertySkipMatrix = @{
     'Microsoft.Network/virtualNetworks' = @{
       virtualNetworkPeerings = $ENV:EXCLUDEPROPERTYVIRTUALNETWORKPEERINGS
