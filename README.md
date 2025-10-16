@@ -13,7 +13,7 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 - `pipeline/` – Pipeline definition and dispatcher settings. Adjust these files when exposing new toggles or action groups.
 - `vars/` – YAML variable layers (`common.yml`, `regions/*.yml`) that `pipeline-common` loads according to include flags.
 - `scripts/` – PowerShell helpers executed by the pipeline (Pester runner, review metadata, sample pre/post scripts).
-- `tests/` – Pester suites grouped into `regression`, `smoke`, and optional folders for unit/integration coverage.
+- `tests/` – Pester suites grouped into `regression`, `smoke`, and optional folders for unit/integration coverage. Shared design fixtures live under `tests/design/`, where each resource type now includes `tags`, `health`, and per-resource property sets.
 
 ## Pipeline Overview
 1. `networkservices.pipeline.yml` introduces parameters for production enablement, DR invocation, environment skips, and action-group toggles before extending the settings template.
@@ -21,13 +21,18 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 3. The dispatcher merges defaults, declares `PipelineCommon`, and calls `templates/main.yml@PipelineCommon` with the composed `configuration` object.
 4. Action groups:
    - `bicep_actions` – deploys the resource group followed by the network services Bicep module, with optional cleanup and delete-on-unmanage toggles.
-   - `bicep_tests_resource_group` and `bicep_tests_network_services` – execute Pester suites through Azure CLI. Both groups set `kind: pester`, so `pipeline-common` publishes the generated NUnit results from `TestResults/<actionGroup>_<action>.xml` automatically.
+   - `bicep_tests_resource_group` and `bicep_tests_network_services` – execute Pester suites through Azure CLI. Each action passes a scoped fixture via `-TestData` so the runner can resolve paths like `tests/<type>/<service>`, and both groups rely on `kind: pester`, which triggers `pipeline-common` to publish NUnit results to `TestResults/<actionGroup>_<action>.xml`.
+
+## Test Fixtures and Health Checks
+- Design files under `tests/design/network_services/**` expose a top-level `health` object (currently `provisioningState`) alongside resource properties. Smoke tests assert these health keys directly against live resources to provide a fast readiness signal without expanding property skip matrices.
+- Regression and integration suites consume the same design data, filtering properties as required while still validating tags and nested collections.
+- Resource-group fixtures live under `tests/design/resource_group/**` and are passed into the runner the same way.
 
 The dedicated tests pipeline (`networkservices.tests.pipeline.yml`) passes `pipelineType: auto`, which appends an `-AUTO` suffix to the Azure DevOps environment name and allows the automated test lane to run without manual approvals.
 
 ## Local Development
 - Install PowerShell 7, Azure CLI (with Bicep CLI support), and the Az PowerShell module to mirror pipeline execution.
-- Exercise tests locally using `pwsh -File scripts/pester_run.ps1 -TestsPath tests/smoke -ResultsFile ./TestResults/local.smoke.xml`, authenticating with Azure beforehand.
+- Exercise tests locally using `pwsh -File scripts/pester_run.ps1 -PathRoot tests -Type smoke -TestData @{ Name = 'network_services' } -ResultsFile ./TestResults/local.smoke.xml`, authenticating with Azure beforehand. Swap `smoke` with `regression` (and adjust `Name`) to target other suites.
 - Run `az bicep build platform/networkservices.bicep` for syntax validation while authoring templates.
 
 ## Configuration Tips

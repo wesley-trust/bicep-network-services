@@ -354,7 +354,13 @@ AfterAll {
     
     Write-Information -InformationAction Continue -MessageData "Cleanup Stack after tests is enabled"
     
-    $StackGroupName = "ds-$ResourceGroupName"
+    # Resource Group Stack
+    if ($Name) {
+      $StackGroupName = "ds-$ResourceGroupName-$Name"
+    }
+    else {
+      $StackGroupName = "ds-$ResourceGroupName"
+    }
     
     Write-Information -InformationAction Continue -MessageData "Deployment Stack '$StackGroupName' will be deleted"
 
@@ -370,6 +376,7 @@ AfterAll {
     # Delete Stack
     az @StackGroupParameters
 
+    # Subscription Stack
     $StackSubName = "ds-sub-$ResourceGroupName"
 
     Write-Information -InformationAction Continue -MessageData "Deployment Stack '$StackSubName' will be deleted"

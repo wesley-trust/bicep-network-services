@@ -11,7 +11,7 @@
 - `platform/` – Bicep templates (`resourcegroup`, `networkservices`) and parameter files referenced by the pipeline actions.
 - `vars/` – Layered YAML variables (`common`, `regions/*`). Loaded by `pipeline-common` based on include flags supplied via configuration.
 - `scripts/` – PowerShell helpers invoked from pipeline actions (Pester run/review, example hooks). Executed within the locked pipeline snapshot.
-- `tests/` – Pester suites grouped into `smoke`, `regression`, etc. Align folder names with the pipeline action definitions.
+- `tests/` – Pester suites grouped into `smoke`, `regression`, etc. Align folder names with the pipeline action definitions; shared design fixtures under `tests/design/` expose `tags`, `health`, and per-resource property sets consumed by the suites.
 
 ## Pipeline Execution Flow
 1. `networkservices.pipeline.yml` defines runtime parameters (production enablement, DR toggle, environment skips, action/test switches) and extends the matching settings file.
@@ -26,7 +26,8 @@
 - Introduce review artefacts or notifications by composing additional action groups (e.g., PowerShell review tasks) in the pipeline definition.
 
 ## Testing and Validation
-- `scripts/pester_run.ps1` installs required modules, authenticates with the federated token passed from Azure CLI, and executes Pester with NUnit output. Ensure new tests live under `tests/` and are referenced by the action group.
+- `scripts/pester_run.ps1` installs required modules, authenticates with the federated token passed from Azure CLI, and executes Pester with NUnit output. It expects `-PathRoot`, `-Type`, and `-TestData.Name` so the runner can locate suites like `tests/<type>/<service>`. Ensure new tests live under `tests/` and are referenced by the action group.
+- Smoke suites now validate the `health` object emitted by each design file (for example, `provisioningState`) to give a quick readiness signal without broad property asserts. Expand the health payload when additional status checks are needed.
 - Review stage uses `scripts/pester_review.ps1` to surface metadata without running tests, keeping review lightweight.
 - Bicep syntax/what-if validation runs through `pipeline-common` validation/review stages; run `az bicep build` locally for quick feedback before pushing.
 
