@@ -1,4 +1,4 @@
+# Common/shared variables
 variables:
   environment: qa
-  sku: qa-sku
-
+  publishTestArtifacts: true

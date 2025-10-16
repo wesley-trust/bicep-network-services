@@ -1,7 +1,9 @@
 param(
-  [Parameter(Mandatory = $true)][string]$TestsPath,
+  [Parameter(Mandatory = $true)][string]$PathRoot,
+  [Parameter(Mandatory = $true)][string]$Type,
   [Parameter(Mandatory = $true)][string]$ResultsFile,
-  [string]$ResultsFormat = 'NUnitXml'
+  [string]$ResultsFormat = 'NUnitXml',
+  [hashtable]$TestData
 )
 
 Set-StrictMode -Version Latest
@@ -29,7 +31,20 @@ try {
     -ApplicationId $env:servicePrincipalId `
     -FederatedToken $env:idToken
 
-  Invoke-Pester -Path $TestsPath -OutputFormat $ResultsFormat -OutputFile $ResultsFile -EnableExit
+  $containerArgs = @{ Path = "$PathRoot/$Type/$($TestData.Name)" }
+  if ($PSBoundParameters.ContainsKey('TestData') -and $null -ne $TestData) {
+    $containerArgs.Data = $TestData
+  }
+
+  $configuration = New-PesterConfiguration
+  $configuration.Run.Container = @(New-PesterContainer @containerArgs)
+  $configuration.Run.Exit = $true
+  $configuration.Output.Verbosity = "Detailed"
+  $configuration.TestResult.Enabled = $true
+  $configuration.TestResult.OutputFormat = $ResultsFormat
+  $configuration.TestResult.OutputPath = $ResultsFile
+
+  Invoke-Pester -Configuration $configuration
 }
 catch {
   Write-Error $_

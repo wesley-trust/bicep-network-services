@@ -8,6 +8,10 @@ param location string = resourceGroup().location
 param tags object = {}
 var normalizedTags = empty(tags) ? null : tags
 
+// Service
+param deployNetworkServicesString string
+var deployNetworkServices = bool(deployNetworkServicesString)
+
 // Route Table
 @description('Flag to determine whether to deploy the route table. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
 param deployRouteTableString string
@@ -17,7 +21,7 @@ var deployRouteTable = bool(deployRouteTableString)
 param routeTables array
 
 module routeTable 'br/public:avm/res/network/route-table:0.5.0' = [
-  for (routeTable, index) in (routeTables ?? []): if (deployRouteTable == true) {
+  for (routeTable, index) in (routeTables ?? []): if (deployNetworkServices && deployRouteTable) {
     params: {
       name: routeTable.name
       location: location
@@ -36,7 +40,7 @@ var deployNetworkSecurityGroup = bool(deployNetworkSecurityGroupString)
 param networkSecurityGroups array
 
 module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.5.1' = [
-  for (networkSecurityGroup, index) in (networkSecurityGroups ?? []): if (deployNetworkSecurityGroup == true) {
+  for (networkSecurityGroup, index) in (networkSecurityGroups ?? []): if (deployNetworkServices && deployNetworkSecurityGroup) {
     params: {
       name: networkSecurityGroup.name
       location: location
@@ -78,20 +82,24 @@ var subnetsWithRtAndNsg = [
   )
 ]
 
+@description('Flag to disable virtual network peerings during test executions. Accepted values: "true", "false".')
+param excludePropertyVirtualNetworkPeeringsString string = 'false'
+var excludePropertyVirtualNetworkPeerings = bool(excludePropertyVirtualNetworkPeeringsString)
+
 @description('Array of virtual network peerings to create. Each peering should be in peeringType (object) format.')
 param peerings array = []
 
 @description('Optional flag to enable VM protection on all subnets within the virtual network.')
 param enableVmProtection bool?
 
-module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (deployVirtualNetwork == true) {
+module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (deployNetworkServices && deployVirtualNetwork) {
   params: {
     name: virtualNetworkName
     location: location
     addressPrefixes: addressPrefixes
     dnsServers: dnsServers
     subnets: subnetsWithRtAndNsg
-    peerings: peerings
+    peerings: excludePropertyVirtualNetworkPeerings ? [] : peerings
     tags: normalizedTags
     enableVmProtection: enableVmProtection
   }

@@ -1,0 +1,14 @@
+{
+  "resourceType": "Microsoft.Network/virtualNetworks/subnets",
+  "tags": {},
+  "health": {},
+  "resources": [
+    {
+      "name": "snet-network-dev-weu-vnet-001-cae-001",
+      "addressPrefix": "10.10.0.0/24",
+      "delegationName": "Microsoft.App/environments",
+      "networkSecurityGroupId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-weu-#{{ deploymentVersion }}/providers/Microsoft.Network/networkSecurityGroups/nsg-snet-network-dev-weu-vnet-001-cae-001",
+      "routeTableId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-weu-#{{ deploymentVersion }}/providers/Microsoft.Network/routeTables/rt-snet-network-dev-weu-vnet-001-cae-001"
+    }
+  ]
+}

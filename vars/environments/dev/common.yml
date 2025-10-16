@@ -1,3 +1,7 @@
 # Common/shared variables
 variables:
   environment: dev
+  publishTestArtifacts: true
+
+  # Cleanup test deployment stack after tests complete
+  testsCleanUpStackAfterTest: true

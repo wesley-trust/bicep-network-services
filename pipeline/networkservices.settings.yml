@@ -22,6 +22,12 @@ parameters:
     default:
       primary: false
       secondary: false
+  - name: globalDependsOn
+    type: string
+    default: ""
+  - name: pipelineType
+    type: string
+    default: ""
 
 resources:
   repositories:
@@ -36,6 +42,7 @@ extends:
   parameters:
     skipEnvironments: ${{ parameters.skipEnvironments }}
     skipRegions: ${{ parameters.skipRegions }}
+    globalDependsOn: ${{ parameters.globalDependsOn }}
     configuration:
       actionGroups: ${{ parameters.actionGroups }}
       enableProduction: ${{ parameters.enableProduction }}
@@ -43,6 +50,7 @@ extends:
       drInvocation: ${{ parameters.drInvocation }}
 
       # Configuration Override
+      pipelineType: ${{ parameters.pipelineType }}
       variables:
         includeCommon: true
         includeEnv: true
