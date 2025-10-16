@@ -17,6 +17,7 @@ variables:
   ## Virtual Network configuration
   deployVirtualNetwork: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
   vNetInstanceVersion: 001
+  excludePropertyVirtualNetworkPeerings: false # Setting to true will exclude virtual network peerings from deployment (useful for test scenarios)
 
   ### Virtual Network: vnet-001
   vnet-001-name: vnet-$(service)-$(environment)-$(regionCode)-$(vNetInstanceVersion)
