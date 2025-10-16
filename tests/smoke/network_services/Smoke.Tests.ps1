@@ -51,14 +51,16 @@ BeforeDiscovery {
     $script:Design = Get-Content -Path $DesignPath -Raw | ConvertFrom-Json
   }
 
-  # Get unique Resource Types
-  $script:ResourceTypes = $Design.resourceType | Sort-Object -Unique
-
-  # Resource Types that do not have health
-  $script:ResourceTypeHealthExclusion = @(
+  # Resource Types to exclude from health checks
+  $ResourceTypeExclusion = @(
     'Microsoft.Network/virtualNetworks/virtualNetworkPeerings'
     'Microsoft.Network/virtualNetworks/subnets'
   )
+
+  # Get unique Resource Types, excluding those in the exclusion list
+  $script:ResourceTypes = $Design.resourceType | 
+  Where-Object { $_ -notin $ResourceTypeExclusion } | 
+  Sort-Object -Unique
 }
 
 BeforeAll {
@@ -184,7 +186,7 @@ Describe "Resource Type '<_>'" -ForEach $ResourceTypes {
       $ActualValue | Should -BeGreaterThan 0
     }
     
-    It "should have at least one Health property" -Skip:($ResourceTypeHealthExclusion -contains $ResourceType) {
+    It "should have at least one Health property" {
 
       # Act
       $ActualValue = $HealthObject.Count
