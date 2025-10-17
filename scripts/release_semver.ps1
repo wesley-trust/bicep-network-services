@@ -38,7 +38,7 @@ try {
     Write-Host 'Repository already contains full history.'
   }
 
-  $commitMessage = (git log -1 --format=%B).Trim()
+  $commitMessage = (git log -1 --format=%B | Out-String).Trim()
   if ([string]::IsNullOrWhiteSpace($commitMessage)) {
     throw 'Latest commit message could not be determined.'
   }
