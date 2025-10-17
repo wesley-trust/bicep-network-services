@@ -1,3 +1,7 @@
+# Run Conditions
+trigger: none
+pr: none
+
 parameters:
   # Global flags
   - name: enableProduction
