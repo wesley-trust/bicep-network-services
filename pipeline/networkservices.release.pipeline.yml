@@ -32,6 +32,6 @@ extends:
           - dev
         useLockedSources: false
         actions:
-          - name: publish_release
+          - name: create_release
             scriptPath: scripts/release_semver.ps1
             arguments: "-ReleaseNotesFile $(Build.SourcesDirectory)/release/release-notes.md"
