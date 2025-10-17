@@ -17,7 +17,7 @@
 1. `networkservices.pipeline.yml` defines runtime parameters (production enablement, DR toggle, environment skips, action/test switches) and extends the matching settings file.
 2. `networkservices.settings.yml` declares the `PipelineDispatcher` repository resource and re-extends `/templates/pipeline-configuration-dispatcher.yml@PipelineDispatcher`.
 3. The dispatcher merges defaults with consumer overrides (including the optional `pipelineType` suffix) and forwards the resulting `configuration` into `pipeline-common/templates/main.yml`.
-4. `pipeline-common` orchestrates initialise, validation, optional review, and deploy stages, loading variables and executing the action groups defined here. Refer to `pipeline-common/AGENTS.md` and `docs/CONFIGURE.md` for the full contract. When `pipelineType` is set (tests pipeline uses `auto`), Azure DevOps environments receive the same suffix so automated lanes can bypass manual approvals.
+4. `pipeline-common` orchestrates initialise, validation, optional review, and deploy stages, loading variables and executing the action groups defined here. Refer to `pipeline-common/AGENTS.md` and `docs/CONFIGURE.md` for the full contract. When `pipelineType` is set (tests pipeline uses `auto`), Azure DevOps environments receive the same suffix so automated lanes can bypass manual approvals; the tests pipeline also sets `globalDependsOn: validation` to gate every action group on template validation.
 
 ## Customisation Points
 - Adjust action wiring in `networkservices.pipeline.yml` to add new Bicep modules, split deployments, or change scripts. Respect the schema expected by `pipeline-common` (`type`, `scope`, `templatePath`, etc.).
@@ -28,7 +28,8 @@
 ## Testing and Validation
 - `scripts/pester_run.ps1` installs required modules, authenticates with the federated token passed from Azure CLI, and executes Pester with NUnit output. It expects `-PathRoot`, `-Type`, and `-TestData.Name` so the runner can locate suites like `tests/<type>/<service>`. Ensure new tests live under `tests/` and are referenced by the action group.
 - Smoke suites now validate the `health` object emitted by each design file (for example, `provisioningState`) to give a quick readiness signal without broad property asserts. Expand the health payload when additional status checks are needed.
-- Review stage uses `scripts/pester_review.ps1` to surface metadata without running tests, keeping review lightweight.
+- Review stage relies on pipeline-common’s Bicep what-if output for approval context. `scripts/pester_review.ps1` ships for future opt-in review tasks but is not wired into the current pipeline definitions.
+- CI action groups in `networkservices.tests.pipeline.yml` enable `variableOverridesEnabled` and pass overrides such as `dynamicDeploymentVersionEnabled` or `excludeTypeVirtualNetworkPeerings`. The helper template `PipelineCommon/templates/variables/include-overrides.yml` turns those keys into pipeline variables and generates unique deployment versions per run, keeping parallel tests isolated.
 - Bicep syntax/what-if validation runs through `pipeline-common` validation/review stages; run `az bicep build` locally for quick feedback before pushing.
 
 ## Operational Notes

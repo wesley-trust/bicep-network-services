@@ -24,11 +24,11 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
    - `bicep_tests_resource_group` and `bicep_tests_network_services` – execute Pester suites through Azure CLI. Each action passes a scoped fixture via `-TestData` so the runner can resolve paths like `tests/<type>/<service>`, and both groups rely on `kind: pester`, which triggers `pipeline-common` to publish NUnit results to `TestResults/<actionGroup>_<action>.xml`.
 
 ## Test Fixtures and Health Checks
-- Design files under `tests/design/network_services/**` expose a top-level `health` object (currently `provisioningState`) alongside resource properties. Smoke tests assert these health keys directly against live resources to provide a fast readiness signal without expanding property skip matrices.
+- Design files under `tests/design/network_services/**` expose a top-level `health` object (typically `provisioningState` or service-specific readiness hints) alongside resource properties. Smoke tests assert these health keys directly against live resources to provide a fast readiness signal without expanding property skip matrices.
 - Regression and integration suites consume the same design data, filtering properties as required while still validating tags and nested collections.
 - Resource-group fixtures live under `tests/design/resource_group/**` and are passed into the runner the same way.
 
-The dedicated tests pipeline (`networkservices.tests.pipeline.yml`) passes `pipelineType: auto`, which appends an `-AUTO` suffix to the Azure DevOps environment name and allows the automated test lane to run without manual approvals.
+The dedicated tests pipeline (`networkservices.tests.pipeline.yml`) passes `pipelineType: auto` and sets `globalDependsOn: validation`, ensuring all scheduled and CI jobs wait for template validation. CI-facing action groups (`bicep_tests_*_ci`) enable `variableOverridesEnabled` and set overrides such as `dynamicDeploymentVersionEnabled` or `excludeTypeVirtualNetworkPeerings`. Those values flow through `pipeline-common/templates/variables/include-overrides.yml`, generating unique deployment versions and toggling optional asserts so parallel test runs stay isolated.
 
 ## Local Development
 - Install PowerShell 7, Azure CLI (with Bicep CLI support), and the Az PowerShell module to mirror pipeline execution.
