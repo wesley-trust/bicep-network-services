@@ -81,11 +81,7 @@ try {
       New-Item -ItemType Directory -Path $releaseNotesDirectory -Force | Out-Null
     }
 
-    $notesContent = @(
-      "## $latestTag",
-      "",
-      $commitMessage.Trim()
-    ) -join "`n"
+    $notesContent = $commitMessage.Trim()
     Set-Content -Path $ReleaseNotesFile -Value $notesContent -Encoding UTF8
     Set-PipelineVariable -Name 'ReleaseNotesFile' -Value $ReleaseNotesFile
     Set-PipelineVariable -Name 'ReleaseNotes' -Value $notesContent
@@ -153,11 +149,7 @@ try {
     New-Item -ItemType Directory -Path $releaseNotesDirectory -Force | Out-Null
   }
 
-  $notesContent = @(
-    "## $newTag",
-    "",
-    $commitMessage.Trim()
-  ) -join "`n"
+  $notesContent = $commitMessage.Trim()
   Set-Content -Path $ReleaseNotesFile -Value $notesContent -Encoding UTF8
 
   Set-PipelineVariable -Name 'ReleaseTag' -Value $newTag
