@@ -6,6 +6,13 @@ trigger:
 
 pr: none
 
+parameters:
+  # Global flags
+  - name: drInvocation
+    displayName: "Invoke Pipeline DR Operation"
+    type: boolean
+    default: false
+
 extends:
   template: networkservices.settings.yml
   parameters:
