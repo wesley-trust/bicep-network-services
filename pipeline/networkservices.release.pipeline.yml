@@ -27,7 +27,6 @@ extends:
     pipelineType: auto
     actionGroups:
       - name: github_release
-        displayName: Release Actions
         type: powershell
         kind: release
         environments:
