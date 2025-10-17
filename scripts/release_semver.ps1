@@ -88,6 +88,7 @@ try {
     ) -join "`n"
     Set-Content -Path $ReleaseNotesFile -Value $notesContent -Encoding UTF8
     Set-PipelineVariable -Name 'ReleaseNotesFile' -Value $ReleaseNotesFile
+    Set-PipelineVariable -Name 'ReleaseNotes' -Value $notesContent
     Write-Host "##vso[build.updatebuildnumber]$latestTag"
     return
   }
@@ -162,6 +163,7 @@ try {
   Set-PipelineVariable -Name 'ReleaseTag' -Value $newTag
   Set-PipelineVariable -Name 'ReleaseTitle' -Value "Release $newTag"
   Set-PipelineVariable -Name 'ReleaseNotesFile' -Value $ReleaseNotesFile
+  Set-PipelineVariable -Name 'ReleaseNotes' -Value $notesContent
 
   Write-Host "##vso[build.updatebuildnumber]$newTag"
 }
