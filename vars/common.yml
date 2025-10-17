@@ -2,6 +2,7 @@
 variables:
   service: network
   serviceConnection: sc-azure-vse-shared-sub-wif-001
+  gitHubServiceConnection: wesley-trust
 
   # Tag configuration
   owner: platform-team

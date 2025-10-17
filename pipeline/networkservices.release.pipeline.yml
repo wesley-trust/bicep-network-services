@@ -1,0 +1,32 @@
+# Run Conditions
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+extends:
+  template: networkservices.settings.yml
+  parameters:
+    runReviewStage: false
+    drInvocation: ${{ parameters.drInvocation }}
+    skipEnvironments:
+      qa: true
+      ppr: true
+    skipRegions:
+      secondary: true
+    globalDependsOn: validation
+    pipelineType: auto
+    actionGroups:
+      - name: github_release
+        displayName: Release Actions
+        type: powershell
+        kind: release
+        environments:
+          - dev
+        useLockedSources: false
+        actions:
+          - name: publish_release
+            scriptPath: scripts/release_semver.ps1
+            arguments: "-ReleaseNotesFile $(Build.SourcesDirectory)/release/release-notes.md"

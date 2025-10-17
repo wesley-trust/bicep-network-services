@@ -2,7 +2,7 @@
 
 ## Mission Overview
 - **Repository scope:** Bicep automation for Network Services. Contains the infrastructure templates, configuration, and tests executed through the shared pipeline stack (dispatcher -> pipeline-common).
-- **Primary pipeline files:** `pipeline/networkservices.pipeline.yml` exposes Azure DevOps parameters; `pipeline/networkservices.settings.yml` links to the dispatcher and forwards configuration.
+- **Primary pipeline files:** `pipeline/networkservices.pipeline.yml` exposes Azure DevOps parameters; `pipeline/networkservices.settings.yml` links to the dispatcher and forwards configuration. `pipeline/networkservices.release.pipeline.yml` drives the semantic-release automation.
 - **Action groups:** `bicep_actions` deploys the resource group then the network services Bicep. `bicep_tests_resource_group` and `bicep_tests_network_services` execute Pester suites via Azure CLI with `kind: pester`, so the shared templates publish `TestResults/<actionGroup>_<action>.xml` automatically.
 - **Dependencies:** The settings template references `wesley-trust/pipeline-dispatcher`, which locks `wesley-trust/pipeline-common`. Review those repos when diagnosing pipeline behaviour.
 
@@ -23,13 +23,14 @@
 - Adjust action wiring in `networkservices.pipeline.yml` to add new Bicep modules, split deployments, or change scripts. Respect the schema expected by `pipeline-common` (`type`, `scope`, `templatePath`, etc.).
 - Override environment metadata (pools, regions, approvals) through the configuration object in the settings file (`environments`, `skipEnvironments`, additional repositories, key vault options).
 - Manage variables by editing YAML files under `vars/` and toggling include flags via dispatcher configuration.
-- Introduce review artefacts or notifications by composing additional action groups (e.g., PowerShell review tasks) in the pipeline definition.
+- Introduce review artefacts or notifications by composing additional action groups (e.g., PowerShell review tasks) in the pipeline definition. The release pipeline reuses the same structure, scoped to the dev environment, with a PowerShell action of `kind: release` that wraps GitHub release publication.
 
 ## Testing and Validation
 - `scripts/pester_run.ps1` installs required modules, authenticates with the federated token passed from Azure CLI, and executes Pester with NUnit output. It expects `-PathRoot`, `-Type`, and `-TestData.Name` so the runner can locate suites like `tests/<type>/<service>`. Ensure new tests live under `tests/` and are referenced by the action group.
 - Smoke suites now validate the `health` object emitted by each design file (for example, `provisioningState`) to give a quick readiness signal without broad property asserts. Expand the health payload when additional status checks are needed.
 - Review stage relies on pipeline-common’s Bicep what-if output for approval context. `scripts/pester_review.ps1` ships for future opt-in review tasks but is not wired into the current pipeline definitions.
 - CI action groups in `networkservices.tests.pipeline.yml` enable `variableOverridesEnabled` and pass overrides such as `dynamicDeploymentVersionEnabled` or `excludeTypeVirtualNetworkPeerings`. The helper template `PipelineCommon/templates/variables/include-overrides.yml` turns those keys into pipeline variables and generates unique deployment versions per run, keeping parallel tests isolated.
+- `scripts/release_semver.ps1` powers the release pipeline: it inspects the squash-merge commit message on `main`, calculates the semver bump, pushes the git tag, writes release notes, and exposes variables consumed by the downstream GitHub release task.
 - Bicep syntax/what-if validation runs through `pipeline-common` validation/review stages; run `az bicep build` locally for quick feedback before pushing.
 
 ## Operational Notes
