@@ -38,6 +38,11 @@ try {
     Write-Host 'Repository already contains full history.'
   }
 
+  $commitMessage = (git log -1 --format=%B).Trim()
+  if ([string]::IsNullOrWhiteSpace($commitMessage)) {
+    throw 'Latest commit message could not be determined.'
+  }
+
   $latestTag = 'v0.0.0'
   try {
     $latestTag = (git describe --tags --abbrev=0).Trim()
@@ -85,11 +90,6 @@ try {
     Set-PipelineVariable -Name 'ReleaseNotesFile' -Value $ReleaseNotesFile
     Write-Host "##vso[build.updatebuildnumber]$latestTag"
     return
-  }
-
-  $commitMessage = (git log -1 --format=%B).Trim()
-  if ([string]::IsNullOrWhiteSpace($commitMessage)) {
-    throw 'Latest commit message could not be determined.'
   }
 
   $firstLine = ($commitMessage -split "`n")[0].Trim()
