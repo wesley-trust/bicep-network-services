@@ -5,6 +5,7 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 ## Quick Links
 - `AGENTS.md` – AI-focused handbook describing action groups, validation, and dependency repos.
 - `pipeline/networkservices.pipeline.yml` – Azure DevOps pipeline definition with runtime parameters.
+- `pipeline/networkservices.tests.pipeline.yml` – CI/scheduled tests pipeline built on the same dispatcher handshake.
 - `pipeline/networkservices.settings.yml` – dispatcher handshake that forwards configuration to `pipeline-common`.
 - `pipeline-common/docs/CONFIGURE.md` – canonical schema reference for configuration payloads.
 
@@ -22,6 +23,8 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 4. Action groups:
    - `bicep_actions` – deploys the resource group followed by the network services Bicep module, with optional cleanup and delete-on-unmanage toggles.
    - `bicep_tests_resource_group` and `bicep_tests_network_services` – execute Pester suites through Azure CLI. Each action passes a scoped fixture via `-TestData` so the runner can resolve paths like `tests/<type>/<service>`, and both groups rely on `kind: pester`, which triggers `pipeline-common` to publish NUnit results to `TestResults/<actionGroup>_<action>.xml`.
+
+The dedicated tests pipeline (`networkservices.tests.pipeline.yml`) passes `pipelineType: auto` and sets `globalDependsOn: validation`, ensuring CI and scheduled jobs wait for template validation. CI-facing action groups (`bicep_tests_*_ci`) enable `variableOverridesEnabled` with `dynamicDeploymentVersionEnabled: true`, allowing `templates/variables/include-overrides.yml` to append a unique suffix to `deploymentVersion` per run so parallel test executions stay isolated.
 
 ## Test Fixtures and Health Checks
 - Design files under `tests/design/network_services/**` expose a top-level `health` object (typically `provisioningState` or service-specific readiness hints) alongside resource properties. Smoke tests assert these health keys directly against live resources to provide a fast readiness signal without expanding property skip matrices.
