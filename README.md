@@ -4,7 +4,7 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 
 ## Quick Links
 - `AGENTS.md` – AI-focused handbook describing action groups, validation, and dependency repos.
-- `pipeline/networkservices.pipeline.yml` – Azure DevOps pipeline definition with runtime parameters.
+- `pipeline/networkservices.deploy.pipeline.yml` – Azure DevOps pipeline definition with runtime parameters.
 - `pipeline/networkservices.tests.pipeline.yml` – CI/scheduled tests pipeline built on the same dispatcher handshake.
 - `pipeline/networkservices.settings.yml` – dispatcher handshake that forwards configuration to `pipeline-common`.
 - `pipeline/networkservices.release.pipeline.yml` – semantic-release pipeline that tags main merges and publishes GitHub releases.
@@ -18,7 +18,7 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 - `tests/` – Pester suites grouped into `regression`, `smoke`, and optional folders for unit/integration coverage. Shared design fixtures live under `tests/design/`, where each resource type now includes `tags`, `health`, and per-resource property sets.
 
 ## Pipeline Overview
-1. `networkservices.pipeline.yml` introduces parameters for production enablement, DR invocation, environment skips, and action-group toggles before extending the settings template.
+1. `networkservices.deploy.pipeline.yml` introduces parameters for production enablement, DR invocation, environment skips, and action-group toggles before extending the settings template.
 2. `networkservices.settings.yml` declares repository resource `PipelineDispatcher` and extends `/templates/pipeline-configuration-dispatcher.yml@PipelineDispatcher`.
 3. The dispatcher merges defaults, declares `PipelineCommon`, and calls `templates/main.yml@PipelineCommon` with the composed `configuration` object.
 4. Action groups:

@@ -2,7 +2,7 @@
 
 ## Mission Overview
 - **Repository scope:** Bicep automation for Network Services. Contains the infrastructure templates, configuration, and tests executed through the shared pipeline stack (dispatcher -> pipeline-common).
-- **Primary pipeline files:** `pipeline/networkservices.pipeline.yml` exposes Azure DevOps parameters; `pipeline/networkservices.settings.yml` links to the dispatcher and forwards configuration. `pipeline/networkservices.release.pipeline.yml` drives the semantic-release automation.
+- **Primary pipeline files:** `pipeline/networkservices.deploy.pipeline.yml` exposes Azure DevOps parameters; `pipeline/networkservices.settings.yml` links to the dispatcher and forwards configuration. `pipeline/networkservices.release.pipeline.yml` drives the semantic-release automation.
 - **Action groups:** `bicep_actions` deploys the resource group then the network services Bicep. `bicep_tests_resource_group` and `bicep_tests_network_services` execute Pester suites via Azure CLI with `kind: pester`, so the shared templates publish `TestResults/<actionGroup>_<action>.xml` automatically.
 - **Dependencies:** The settings template references `wesley-trust/pipeline-dispatcher`, which locks `wesley-trust/pipeline-common`. Review those repos when diagnosing pipeline behaviour.
 
@@ -14,13 +14,13 @@
 - `tests/` – Pester suites grouped into `smoke`, `regression`, etc. Align folder names with the pipeline action definitions; shared design fixtures under `tests/design/` expose `tags`, `health`, and per-resource property sets consumed by the suites.
 
 ## Pipeline Execution Flow
-1. `networkservices.pipeline.yml` defines runtime parameters (production enablement, DR toggle, environment skips, action/test switches) and extends the matching settings file.
+1. `networkservices.deploy.pipeline.yml` defines runtime parameters (production enablement, DR toggle, environment skips, action/test switches) and extends the matching settings file.
 2. `networkservices.settings.yml` declares the `PipelineDispatcher` repository resource and re-extends `/templates/pipeline-configuration-dispatcher.yml@PipelineDispatcher`.
 3. The dispatcher merges defaults with consumer overrides (including the optional `pipelineType` suffix) and forwards the resulting `configuration` into `pipeline-common/templates/main.yml`.
 4. `pipeline-common` orchestrates initialise, validation, optional review, and deploy stages, loading variables and executing the action groups defined here. Refer to `pipeline-common/AGENTS.md` and `docs/CONFIGURE.md` for the full contract. When `pipelineType` is set (tests pipeline uses `auto`), Azure DevOps environments receive the same suffix so automated lanes can bypass manual approvals; the tests pipeline also sets `globalDependsOn: validation` to gate every action group on template validation.
 
 ## Customisation Points
-- Adjust action wiring in `networkservices.pipeline.yml` to add new Bicep modules, split deployments, or change scripts. Respect the schema expected by `pipeline-common` (`type`, `scope`, `templatePath`, etc.).
+- Adjust action wiring in `networkservices.deploy.pipeline.yml` to add new Bicep modules, split deployments, or change scripts. Respect the schema expected by `pipeline-common` (`type`, `scope`, `templatePath`, etc.).
 - Override environment metadata (pools, regions, approvals) through the configuration object in the settings file (`environments`, `skipEnvironments`, additional repositories, key vault options).
 - Manage variables by editing YAML files under `vars/` and toggling include flags via dispatcher configuration.
 - Introduce review artefacts or notifications by composing additional action groups (e.g., PowerShell review tasks) in the pipeline definition. The release pipeline reuses the same structure, scoped to the dev environment, with a PowerShell action of `kind: release` that wraps GitHub release publication.
