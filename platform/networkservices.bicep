@@ -6,7 +6,7 @@ param location string = resourceGroup().location
 
 @description('Optional tags applied to the resources.')
 param tags object = {}
-var normalizedTags = empty(tags) ? null : tags
+var normalisedTags = empty(tags) ? null : tags
 
 // Service
 @description('Flag to determine whether to deploy the service. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
@@ -27,7 +27,7 @@ module routeTable 'br/public:avm/res/network/route-table:0.5.0' = [
       name: routeTable.name
       location: location
       routes: routeTable.routes
-      tags: normalizedTags
+      tags: normalisedTags
     }
   }
 ]
@@ -46,7 +46,7 @@ module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.
       name: networkSecurityGroup.name
       location: location
       securityRules: networkSecurityGroup.securityRules
-      tags: normalizedTags
+      tags: normalisedTags
     }
   }
 ]
@@ -101,7 +101,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (de
     dnsServers: dnsServers
     subnets: subnetsWithRtAndNsg
     peerings: excludePropertyVirtualNetworkPeerings ? [] : peerings
-    tags: normalizedTags
+    tags: normalisedTags
     enableVmProtection: enableVmProtection
   }
   dependsOn: [
