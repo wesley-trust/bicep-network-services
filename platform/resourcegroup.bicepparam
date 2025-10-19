@@ -1,7 +1,6 @@
 using './resourcegroup.bicep'
 
-param deployResourceGroupString = '#{{ deployResourceGroup }}'
-
+// Common
 param location = '#{{ region }}'
 param resourceGroupName = '#{{ resourceGroup }}'
 
@@ -10,3 +9,9 @@ param tags = {
   owner: '#{{ owner }}'
   service: '#{{ service }}'
 }
+
+// Service
+param deployServiceString = '#{{ deployService }}'
+
+// Resource Group
+param deployResourceGroupString = '#{{ deployResourceGroup }}'

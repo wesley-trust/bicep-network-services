@@ -9,8 +9,9 @@ param tags object = {}
 var normalizedTags = empty(tags) ? null : tags
 
 // Service
-param deployNetworkServicesString string
-var deployNetworkServices = bool(deployNetworkServicesString)
+@description('Flag to determine whether to deploy the service. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
+param deployServiceString string
+var deployService = bool(deployServiceString)
 
 // Route Table
 @description('Flag to determine whether to deploy the route table. Set to true to deploy, false to skip deployment. Accepted values: "true", "false".')
@@ -21,7 +22,7 @@ var deployRouteTable = bool(deployRouteTableString)
 param routeTables array
 
 module routeTable 'br/public:avm/res/network/route-table:0.5.0' = [
-  for (routeTable, index) in (routeTables ?? []): if (deployNetworkServices && deployRouteTable) {
+  for (routeTable, index) in (routeTables ?? []): if (deployService && deployRouteTable) {
     params: {
       name: routeTable.name
       location: location
@@ -40,7 +41,7 @@ var deployNetworkSecurityGroup = bool(deployNetworkSecurityGroupString)
 param networkSecurityGroups array
 
 module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.5.1' = [
-  for (networkSecurityGroup, index) in (networkSecurityGroups ?? []): if (deployNetworkServices && deployNetworkSecurityGroup) {
+  for (networkSecurityGroup, index) in (networkSecurityGroups ?? []): if (deployService && deployNetworkSecurityGroup) {
     params: {
       name: networkSecurityGroup.name
       location: location
@@ -92,7 +93,7 @@ param peerings array = []
 @description('Optional flag to enable VM protection on all subnets within the virtual network.')
 param enableVmProtection bool?
 
-module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (deployNetworkServices && deployVirtualNetwork) {
+module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.0' = if (deployService && deployVirtualNetwork) {
   params: {
     name: virtualNetworkName
     location: location

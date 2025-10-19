@@ -87,12 +87,16 @@ parameters:
     default: false
 
   # Operational flags
-  - name: allowDeleteOnUnmanage
-    displayName: "Temporarily Allow Delete on Unmanage"
+  - name: cleanupSubscriptionStack
+    displayName: "Cleanup Subscription Stack (Unmanage Resource Group)"
     type: boolean
     default: false
   - name: cleanupResourceGroupStack
-    displayName: "Cleanup Resource Group Stack"
+    displayName: "Cleanup Resource Group Stack (Unmanage Resources)"
+    type: boolean
+    default: false
+  - name: allowDeleteOnUnmanage
+    displayName: "Temporarily Allow Delete on Unmanage"
     type: boolean
     default: false
 
@@ -121,7 +125,7 @@ extends:
             resourceGroupName: $(resourceGroup)
             location: $(region)
             allowDeleteOnUnmanage: ${{ parameters.allowDeleteOnUnmanage}}
-            cleanupStack: ${{ parameters.cleanupResourceGroupStack }}
+            cleanupStack: ${{ parameters.cleanupSubscriptionStack }}
             templatePath: platform/resourcegroup.bicep
             parametersPath: platform/resourcegroup.bicepparam
           - name: network_services
@@ -130,6 +134,7 @@ extends:
             resourceGroupName: $(resourceGroup)
             location: $(region)
             allowDeleteOnUnmanage: ${{ parameters.allowDeleteOnUnmanage }}
+            cleanupStack: ${{ parameters.cleanupResourceGroupStack }}
             templatePath: platform/networkservices.bicep
             parametersPath: platform/networkservices.bicepparam
       - name: bicep_tests_resource_group

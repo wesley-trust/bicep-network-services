@@ -7,13 +7,13 @@ variables:
   # Tag configuration
   owner: platform-team
 
+  # Service configuration
+  deployService: true # Setting to false will prevent creation of all dependent resources, overriding individual variables, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
+
   # Resource Group configuration
   deployResourceGroup: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter, any dependent resources will fail to deploy
   deploymentVersion: 001
   resourceGroup: rg-$(service)-$(environment)-$(regionCode)-$(deploymentVersion)
-
-  # Network Services configuration
-  deployNetworkServices: true # Setting to false will prevent creation of all dependent resources, overriding individual variables, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
 
   ## Virtual Network configuration
   deployVirtualNetwork: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
@@ -29,8 +29,8 @@ variables:
   subnetInstanceVersion: 001
 
   ### Subnet: snet-001
-  snet-001-service: "cae"
-  snet-001-name: snet-$(service)-$(environment)-$(regionCode)-vnet-$(vNetInstanceVersion)-$(snet-001-service)-$(subnetInstanceVersion)
+  snet-001-resource: "cae"
+  snet-001-name: snet-$(service)-$(environment)-$(regionCode)-vnet-$(vNetInstanceVersion)-$(snet-001-resource)-$(subnetInstanceVersion)
 
   ## Route Table configuration
   deployRouteTable: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
