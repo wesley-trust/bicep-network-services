@@ -2,7 +2,7 @@
 
 ## Mission Overview
 - **Repository scope:** Bicep automation for Network Services. Contains the infrastructure templates, configuration, and tests executed through the shared pipeline stack (dispatcher -> pipeline-common).
-- **Primary pipeline files:** `pipeline/networkservices.deploy.pipeline.yml` exposes Azure DevOps parameters; `pipeline/networkservices.settings.yml` links to the dispatcher and forwards configuration. `pipeline/networkservices.release.pipeline.yml` drives the semantic-release automation.
+- **Primary pipeline files:** `pipeline/networkservices.deploy.pipeline.yml` exposes Azure DevOps parameters; `pipeline/networkservices.settings.yml` links to the dispatcher and forwards configuration. `pipeline/networkservices.publish.pipeline.yml` drives the semantic-release automation.
 - **Action groups:** `bicep_actions` deploys the resource group then the network services Bicep. `bicep_tests_resource_group` and `bicep_tests_network_services` execute Pester suites via Azure CLI with `kind: pester`, so the shared templates publish `TestResults/<actionGroup>_<action>.xml` automatically.
 - **Dependencies:** The settings template references `wesley-trust/pipeline-dispatcher`, which locks `wesley-trust/pipeline-common`. Review those repos when diagnosing pipeline behaviour.
 

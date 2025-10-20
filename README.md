@@ -7,7 +7,7 @@ Infrastructure-as-code for Wesley Trust network services. The repository contain
 - `pipeline/networkservices.deploy.pipeline.yml` – Azure DevOps pipeline definition with runtime parameters.
 - `pipeline/networkservices.tests.pipeline.yml` – CI/scheduled tests pipeline built on the same dispatcher handshake.
 - `pipeline/networkservices.settings.yml` – dispatcher handshake that forwards configuration to `pipeline-common`.
-- `pipeline/networkservices.release.pipeline.yml` – semantic-release pipeline that tags main merges and publishes GitHub releases.
+- `pipeline/networkservices.publish.pipeline.yml` – semantic-release pipeline that tags main merges and publishes GitHub releases.
 - `pipeline-common/docs/CONFIGURE.md` – canonical schema reference for configuration payloads.
 
 ## Repository Layout
@@ -32,7 +32,7 @@ The dedicated tests pipeline (`networkservices.tests.pipeline.yml`) passes `pipe
 - Regression and integration suites consume the same design data, filtering properties as required while still validating tags and nested collections.
 - Resource-group fixtures live under `tests/design/resource_group/**` and are passed into the runner the same way.
 
-The release pipeline (`networkservices.release.pipeline.yml`) also runs with `pipelineType: auto`, scoped to the dev environment only. It executes `scripts/release_semver.ps1` after every successful `main` build to derive the semantic version from the squash-merge commit message, create/push the tag, and surface release metadata. A PowerShell action with `kind: release` then wraps `GitHubRelease@1` to publish the GitHub Release entry using the variables set by the script.
+The release pipeline (`networkservices.publish.pipeline.yml`) also runs with `pipelineType: auto`, scoped to the dev environment only. It executes `scripts/release_semver.ps1` after every successful `main` build to derive the semantic version from the squash-merge commit message, create/push the tag, and surface release metadata. A PowerShell action with `kind: release` then wraps `GitHubRelease@1` to publish the GitHub Release entry using the variables set by the script.
 
 ## Local Development
 - Install PowerShell 7, Azure CLI (with Bicep CLI support), and the Az PowerShell module to mirror pipeline execution.
