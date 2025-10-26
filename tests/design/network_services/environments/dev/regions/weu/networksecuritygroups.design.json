@@ -16,6 +16,14 @@
         "allow-home-inbound",
         "allow-SharedServices-PROD-vnet-inbound"
       ]
+    },
+    {
+      "name": "nsg-snet-network-dev-weu-vnet-001-mcp-001",
+      "location": "westeurope",
+      "securityRuleNames": [
+        "allow-home-inbound",
+        "allow-SharedServices-PROD-vnet-inbound"
+      ]
     }
   ]
 }

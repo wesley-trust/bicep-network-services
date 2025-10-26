@@ -37,3 +37,7 @@ variables:
 
   ## Network Security Group configuration
   deployNetworkSecurityGroup: true # Setting to false will prevent creation, any resources deployed will be detached or deleted as per the allowDeleteOnUnmanage pipeline parameter
+
+  ### Subnet: snet-002
+  snet-002-resource: "mcp"
+  snet-002-name: snet-$(service)-$(environment)-$(regionCode)-vnet-$(vNetInstanceVersion)-$(snet-002-resource)-$(subnetInstanceVersion)

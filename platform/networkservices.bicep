@@ -21,12 +21,15 @@ var deployRouteTable = bool(deployRouteTableString)
 @description('Array of route tables to create.')
 param routeTables array
 
+@description('Routes automatically added to every route table.')
+param defaultRoutes array = []
+
 module routeTable 'br/public:avm/res/network/route-table:0.5.0' = [
   for (routeTable, index) in (routeTables ?? []): if (deployService && deployRouteTable) {
     params: {
       name: routeTable.name
       location: location
-      routes: routeTable.routes
+      routes: concat(defaultRoutes, (routeTable.routes ?? []))
       tags: normalisedTags
     }
   }
@@ -40,12 +43,15 @@ var deployNetworkSecurityGroup = bool(deployNetworkSecurityGroupString)
 @description('Array of network security groups to create.')
 param networkSecurityGroups array
 
+@description('Security rules automatically added to every network security group.')
+param defaultSecurityRules array = []
+
 module networkSecurityGroup 'br/public:avm/res/network/network-security-group:0.5.1' = [
   for (networkSecurityGroup, index) in (networkSecurityGroups ?? []): if (deployService && deployNetworkSecurityGroup) {
     params: {
       name: networkSecurityGroup.name
       location: location
-      securityRules: networkSecurityGroup.securityRules
+      securityRules: concat(defaultSecurityRules, (networkSecurityGroup.securityRules ?? []))
       tags: normalisedTags
     }
   }

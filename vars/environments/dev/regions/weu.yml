@@ -10,3 +10,7 @@ variables:
   
   ## Subnet: snet-001
   snet-001-addressPrefix: "10.10.0.0/24"
+
+  ## Subnet: snet-002
+  snet-002-addressPrefix: "10.10.1.0/24"
+

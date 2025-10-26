@@ -9,6 +9,13 @@
       "delegationName": "Microsoft.App/environments",
       "networkSecurityGroupId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-neu-#{{ deploymentVersion }}/providers/Microsoft.Network/networkSecurityGroups/nsg-snet-network-dev-neu-vnet-001-cae-001",
       "routeTableId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-neu-#{{ deploymentVersion }}/providers/Microsoft.Network/routeTables/rt-snet-network-dev-neu-vnet-001-cae-001"
+    },
+    {
+      "name": "snet-network-dev-neu-vnet-001-mcp-001",
+      "addressPrefix": "10.8.1.0/24",
+      "delegationName": "Microsoft.App/environments",
+      "networkSecurityGroupId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-neu-#{{ deploymentVersion }}/providers/Microsoft.Network/networkSecurityGroups/nsg-snet-network-dev-neu-vnet-001-mcp-001",
+      "routeTableId": "/subscriptions/b5bd3eb6-d84e-491e-b70d-857490614ef0/resourceGroups/rg-network-dev-neu-#{{ deploymentVersion }}/providers/Microsoft.Network/routeTables/rt-snet-network-dev-neu-vnet-001-mcp-001"
     }
   ]
 }

@@ -13,64 +13,76 @@ param deployServiceString = '#{{ deployService }}'
 // Route Table
 param deployRouteTableString = '#{{ deployRouteTable }}'
 
+param defaultRoutes = [
+  {
+    name: 'SharedServices-PROD-vnet'
+    properties: {
+      addressPrefix: '10.0.2.0/24'
+      nextHopIpAddress: '10.4.0.4'
+      nextHopType: 'VirtualAppliance'
+    }
+  }
+  {
+    name: 'home'
+    properties: {
+      addressPrefix: '192.168.1.0/24'
+      nextHopIpAddress: '10.4.0.4'
+      nextHopType: 'VirtualAppliance'
+    }
+  }
+]
+
 param routeTables = [
   {
     name: 'rt-#{{ snet-001-name }}'
-    routes: [
-      {
-        name: 'SharedServices-PROD-vnet'
-        properties: {
-          addressPrefix: '10.0.2.0/24'
-          nextHopIpAddress: '10.4.0.4'
-          nextHopType: 'VirtualAppliance'
-        }
-      }
-      {
-        name: 'home'
-        properties: {
-          addressPrefix: '192.168.1.0/24'
-          nextHopIpAddress: '10.4.0.4'
-          nextHopType: 'VirtualAppliance'
-        }
-      }
-    ]
+    routes: []
+  }
+  {
+    name: 'rt-#{{ snet-002-name }}'
+    routes: []
   }
 ]
 
 // Network Security Group
 param deployNetworkSecurityGroupString = '#{{ deployNetworkSecurityGroup }}'
 
+param defaultSecurityRules = [
+  {
+    name: 'allow-SharedServices-PROD-vnet-inbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: '*'
+      destinationPortRange: '*'
+      direction: 'Inbound'
+      priority: 100
+      protocol: '*'
+      sourceAddressPrefix: '10.0.2.0/24'
+      sourcePortRange: '*'
+    }
+  }
+  {
+    name: 'allow-home-inbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: '*'
+      destinationPortRange: '*'
+      direction: 'Inbound'
+      priority: 200
+      protocol: '*'
+      sourceAddressPrefix: '192.168.1.0/24'
+      sourcePortRange: '*'
+    }
+  }
+]
+
 param networkSecurityGroups = [
   {
     name: 'nsg-#{{ snet-001-name }}'
-    securityRules: [
-      {
-        name: 'allow-SharedServices-PROD-vnet-inbound'
-        properties: {
-          access: 'Allow'
-          destinationAddressPrefix: '*'
-          destinationPortRange: '*'
-          direction: 'Inbound'
-          priority: 100
-          protocol: '*'
-          sourceAddressPrefix: '10.0.2.0/24'
-          sourcePortRange: '*'
-        }
-      }
-      {
-        name: 'allow-home-inbound'
-        properties: {
-          access: 'Allow'
-          destinationAddressPrefix: '*'
-          destinationPortRange: '*'
-          direction: 'Inbound'
-          priority: 200
-          protocol: '*'
-          sourceAddressPrefix: '192.168.1.0/24'
-          sourcePortRange: '*'
-        }
-      }
-    ]
+    securityRules: []
+  }
+  {
+    name: 'nsg-#{{ snet-002-name }}'
+    securityRules: []
   }
 ]
 
@@ -92,6 +104,11 @@ param subnets = [
   {
     name: '#{{ snet-001-name }}'
     addressPrefix: '#{{ snet-001-addressPrefix }}'
+    delegation: 'Microsoft.App/environments'
+  }
+  {
+    name: '#{{ snet-002-name }}'
+    addressPrefix: '#{{ snet-002-addressPrefix }}'
     delegation: 'Microsoft.App/environments'
   }
 ]

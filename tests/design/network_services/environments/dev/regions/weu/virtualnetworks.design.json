@@ -20,7 +20,8 @@
         "10.0.2.11"
       ],
       "subnetNames": [
-        "snet-network-dev-weu-vnet-001-cae-001"
+        "snet-network-dev-weu-vnet-001-cae-001",
+        "snet-network-dev-weu-vnet-001-mcp-001"
       ],
       "virtualNetworkPeerings": [
         "peer-vnet-network-dev-weu-001-EdgeServices-PROD-vnet"
